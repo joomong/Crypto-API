@@ -11,35 +11,28 @@
 class Binance : public Exchange {
 public:
     Binance(std::string &api_key, std::string &api_secret)
-        :Exchange(), API_KEY(api_key), API_SECRET(api_secret){};
+        : Exchange(), API_KEY(api_key), API_SECRET(api_secret){};
 
     //Public API
     static void GetServerTime(Json::Value &result_json);
 
     static void GetExchangeInfo(Json::Value &result_json);
 
-    static void GetOrderBook(std::string &symbol,
-                             int limit,
+    static void GetOrderBook(std::string &symbol, int limit,
                              Json::Value &result_json);
 
-    static void GetRecentTrades(std::string &symbol,
-                                int limit,
+    static void GetRecentTrades(std::string &symbol, int limit,
                                 Json::Value &result_json);
 
-    static void GetAggTrades(std::string &symbol,
-                             int limit,
+    static void GetAggTrades(std::string &symbol, int limit,
                              Json::Value &result_json);
 
-    static void GetKlines(std::string &symbol,
-                          std::string &interval,
-                          int limit,
+    static void GetKlines(std::string &symbol, std::string &interval, int limit,
                           Json::Value &result_json);
 
-    static void GetAvgPrice(std::string &symbol,
-                            Json::Value &result_json);
+    static void GetAvgPrice(std::string &symbol, Json::Value &result_json);
 
-    static void Get24hrTicker(std::string &symbol,
-                              Json::Value &result_json);
+    static void Get24hrTicker(std::string &symbol, Json::Value &result_json);
 
     static void GetPriceTicker(Json::Value &result_json);
 
@@ -49,71 +42,69 @@ public:
 
 
     //Private API
-    void PostOrders(const char *symbol,
-                    const char *side,
-                    const char *type,
-                    const char *timeInForce,
-                    double quantity,
-                    double price,
-                    const char *newClientOrderId,
-                    double stopPrice,
-                    double icebergQty,
-                    long recvWindow,
-                    Json::Value &json_result);
-
-    void CancelOrder(const char *symbol,
-                    const char *origClientOrderId,
-                    const char *orderId,
-                    const char *newClientOrderId,
-                    long recvWindow,
-                    Json::Value &json_result);
-
-    void CancelAllOrders(const char *symbol,
-                        long recvWindow,
-                        Json::Value &json_result);
-
-    void ReplaceOrder(const char *symbol,
-                      const char *origClientOrderId,
-                      const char *orderId,
-                      const char *side,
-                      const char *type,
-                      const char *timeInForce,
-                      double quantity,
-                      double price,
-                      const char *newClientOrderId,
-                      double stopPrice,
-                      double icebergQty,
-                      long recvWindow,
-                      Json::Value &json_result);
-
-    void GetCurrentOpenOrders(const char *symbol,
-                       long recvWindow,
-                       Json::Value &json_result);
-
-    void GetOrders(const char *symbol,
-                          long recvWindow,
-                          Json::Value &json_result);
-
-    void GetAccountInfo(long recvWindow,
-                        Json::Value &json_result);
-
-    void GetTradeList(const char *symbol,
-                      long fromId,
-                      long startTime,
-                      long endTime,
-                      int limit,
-                      long recvWindow,
-                      Json::Value &json_result);
-
-    void GetUserStreamKey(long recvWindow,
-                          Json::Value &json_result);
-
-    void CloseUserStreamKey(const char *listenKey,
-                            long recvWindow,
+    void PostLimitSell(const std::string &symbol, 
+                            const double &quantity,
+                            const double &price, 
                             Json::Value &json_result);
 
-    void KeepAliveUserStreamKey(const char *listenKey,
-                                long recvWindow,
+    void PostLimitBuy(const std::string &symbol, 
+                           const double &quantity,
+                           const double &price, 
+                           Json::Value &json_result);
+
+    void PostMarketBuy(const std::string &symbol,
+                            const double &quantity,
+                            Json::Value &json_result);
+
+    void PostMarketSell(const std::string &symbol, 
+                           const double &quantity, 
+                           Json::Value &json_result);
+
+    void PostOrders(const std::string &symbol, 
+                    const std::string &side,
+                    const std::string &type,
+                    const std::string &time_in_force,
+                    const double &quantity, 
+                    const double &price,
+                    Json::Value &json_result,
+                    const std::string &new_client_order_id = "",
+                    const double &stop_price = 0.0,
+                    const double &iceberg_qty = 0.0, 
+                    const long &recv_window = 0);
+
+    void CancelOrder(const std::string &symbol,
+                     const std::string &order_id,
+                     Json::Value &json_result,
+                     const long recv_window = 0);
+
+    void CancelAllOrders(const std::string &symbol, 
+                         Json::Value &json_result,
+                         const long recvWindow = 0);
+
+    void ReplaceOrder(const char *symbol, const char *origClientOrderId,
+                      const char *orderId, const char *side, const char *type,
+                      const char *timeInForce, double quantity, double price,
+                      const char *newClientOrderId, double stopPrice,
+                      double icebergQty, long recvWindow,
+                      Json::Value &json_result);
+
+    void GetCurrentOpenOrders(const char *symbol, long recvWindow,
+                              Json::Value &json_result);
+
+    void GetOrders(const char *symbol, long recvWindow,
+                   Json::Value &json_result);
+
+    void GetAccountInfo(long recvWindow, Json::Value &json_result);
+
+    void GetCurrentOpenOrders(const char *symbol, long recvWindow,
+                              Json::Value &json_result);
+
+    void GetUserStreamKey(long recvWindow, Json::Value &json_result);
+
+    void CloseUserStreamKey(const char *listenKey, long recvWindow,
+                            Json::Value &json_result);
+
+    void KeepAliveUserStreamKey(const char *listenKey, long recvWindow,
                                 Json::Value &json_result);
 
 private:
