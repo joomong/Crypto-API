@@ -1,0 +1,22 @@
+# ninja log v5
+2	1186	1681558054103843906	src/CMakeFiles/cryptoapi.dir/binance.cpp.o	ea9cc735c6cfd733
+1	226	1681396170001027021	CMakeFiles/Crypto_API.dir/crypto-cpp-lib/test/test-binance.cpp.o	5adfd79fd230c6e8
+1	921	1681549253638914357	example/CMakeFiles/binance-example.dir/__/src/exchange.cpp.o	89b08089ab227e9e
+2	1137	1681396332672977771	CMakeFiles/Crypto_API.dir/crypto-cpp-lib/src/binance.cpp.o	7529814ce2ec38cb
+1591	1725	1681071675103928399	Crypto_API	f7f4dd1205d45e75
+6	812	1681537877853458263	CMakeFiles/Crypto_API.dir/src/binance.cpp.o	6bfbffbf9f5acb21
+1	817	1681396170593942503	CMakeFiles/Crypto_API.dir/crypto-cpp-lib/src/exchange.cpp.o	788102011e28ac12
+1	370	1681558070801186447	example/CMakeFiles/binance-example.dir/binance_example.cpp.o	626cdbb99e4d2c5a
+0	72	1681575674749542450	build.ninja	10604589056f26eb
+1	1644	1681549254373214089	example/CMakeFiles/binance-example.dir/__/src/jsoncpp.cpp.o	cace9e5c6d2f5286
+1	857	1681461626151292031	CMakeFiles/Crypto_API.dir/crypto-cpp/src/binance.cpp.o	1f819542ab07cf3b
+1	207	1681462710979258416	CMakeFiles/Crypto_API.dir/example/binance_example.cpp.o	f2b90141abc7829b
+370	428	1681558070863633815	example/binance-example	ea57e6d84c04ce61
+2	1128	1681550182003546445	src/CMakeFiles/cryptoapi.dir/exchange.cpp.o	2fdb7443fe5c4bdc
+7	3748	1681543930152163156	example/CMakeFiles/example-binance.dir/__/src/jsoncpp.cpp.o	ff4d31c5aa010da5
+8	710	1681471869153419832	CMakeFiles/Test_Crypto_API.dir/src/binance.cpp.o	9bdcb991405b3b3c
+7	685	1681537877723456163	CMakeFiles/Crypto_API.dir/src/exchange.cpp.o	e2c5e442cee78474
+1	618	1681544752439854108	example/CMakeFiles/example-binance.dir/binance_example.cpp.o	7d7e8be178f579e6
+2	1369	1681542987424403006	src/CMakeFiles/cryptoapi.dir/jsoncpp.cpp.o	bcbc3b00b7874046
+2	707	1681461626000561076	CMakeFiles/Crypto_API.dir/crypto-cpp/src/exchange.cpp.o	92e62f3c2dc0410
+1186	1296	1681558054232974000	lib/libcryptoapi.a	5ede12f752ada549
