@@ -54,7 +54,6 @@ void Exchange::CurlApiWithHeader(std::string &url,
                       << curl_easy_strerror(res) << std::endl;
         }
     }
-    std::cout << "<BinaCPP::curl_api> done" << std::endl;
 }
 
 
@@ -118,15 +117,14 @@ long long Exchange::GetCurrentMsEpoch()
 
 
 struct lws_context *Exchange::context = nullptr;
-struct lws_protocols Exchange::protocols[] =
+struct lws_protocols Exchange::protocols[] = {
         {
-                {
-                        "example-protocol",
-                        Exchange::event_cb,
-                        0,
-                        65536,
-                },
-                { nullptr, nullptr, 0, 0 } /* terminator */
+                "example-protocol",
+                Exchange::event_cb,
+                0,
+                65536,
+        },
+        {nullptr,nullptr,0,0 } /* terminator */
 };
 
 std::map <struct lws *,CB> Exchange::handles ;
@@ -144,9 +142,6 @@ int Exchange::event_cb(struct lws *wsi, enum lws_callback_reasons reason, void *
 
             /* Handle incomming messages here. */
             try {
-
-                //BinaCPP_logger::write_log("%p %s",  wsi, (char *)in );
-
                 std::string str_result = std::string( (char*)in );
                 Json::Reader reader;
                 Json::Value json_result;
@@ -177,63 +172,40 @@ int Exchange::event_cb(struct lws *wsi, enum lws_callback_reasons reason, void *
         default:
             break;
     }
-
     return 0;
 }
 
 
-void BinaCPP_websocket::init( )
-{
-    struct lws_context_creation_info info;
-    memset( &info, 0, sizeof(info) );
-
-    info.port = CONTEXT_PORT_NO_LISTEN;
-    info.protocols = protocols;
-    info.gid = -1;
-    info.uid = -1;
-    info.options |= LWS_SERVER_OPTION_DO_SSL_GLOBAL_INIT;
-
-    context = lws_create_context( &info );
-}
-
-
-void BinaCPP_websocket::connect_endpoint (
-
-        CB cb,
-        const char *path
-
-)
+void Exchange::connect_endpoint (CB cb,const char *host ,int port, const char *path)
 {
     char ws_path[1024];
     strcpy( ws_path, path );
 
-
     /* Connect if we are not connected to the server. */
-    struct lws_client_connect_info ccinfo = {0};
+    struct lws_client_connect_info ccinfo = {};
     ccinfo.context 	= context;
-    ccinfo.address 	= BINANCE_WS_HOST;
-    ccinfo.port 	= BINANCE_WS_PORT;
+    ccinfo.address 	= host;
+    ccinfo.port 	= port;
     ccinfo.path 	= ws_path;
-    ccinfo.host 	= lws_canonical_hostname( context );
+    ccinfo.host 	= lws_canonical_hostname(context);
     ccinfo.origin 	= "origin";
     ccinfo.protocol = protocols[0].name;
     ccinfo.ssl_connection = LCCSCF_USE_SSL | LCCSCF_ALLOW_SELFSIGNED | LCCSCF_SKIP_SERVER_CERT_HOSTNAME_CHECK;
 
     struct lws* conn = lws_client_connect_via_info(&ccinfo);
     handles[conn] = cb;
-
-
 }
 
 
-void BinaCPP_websocket::enter_event_loop()
+void Exchange::enter_event_loop()
 {
-    while( 1 )
+    while(true)
     {
         try {
             lws_service( context, 500 );
-        } catch ( exception &e ) {
-            BinaCPP_logger::write_log( "<BinaCPP_websocket::enter_event_loop> Error ! %s", e.what() );
+        } catch ( std::exception &e ) {
+            std::cout <<  "<BinaCPP_websocket::enter_event_loop> Error ! %s"
+                         << e.what();
             break;
         }
     }

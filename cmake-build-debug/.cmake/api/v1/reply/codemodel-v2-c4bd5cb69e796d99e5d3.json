@@ -31,7 +31,8 @@
 					"source" : "example",
 					"targetIndexes" : 
 					[
-						0
+						0,
+						2
 					]
 				},
 				{
@@ -64,7 +65,8 @@
 					"targetIndexes" : 
 					[
 						0,
-						1
+						1,
+						2
 					]
 				}
 			],
@@ -73,7 +75,7 @@
 				{
 					"directoryIndex" : 1,
 					"id" : "binance-example::@70983d692f648185febe",
-					"jsonFile" : "target-binance-example-Debug-412674eb57029d4f3458.json",
+					"jsonFile" : "target-binance-example-Debug-9e474dd41925bea29bff.json",
 					"name" : "binance-example",
 					"projectIndex" : 0
 				},
@@ -82,6 +84,13 @@
 					"id" : "cryptoapi::@145eef247bfb46b6828c",
 					"jsonFile" : "target-cryptoapi-Debug-f619be351c499ff747d4.json",
 					"name" : "cryptoapi",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "ws-example::@70983d692f648185febe",
+					"jsonFile" : "target-ws-example-Debug-96d0623e4a886e1cde27.json",
+					"name" : "ws-example",
 					"projectIndex" : 0
 				}
 			]

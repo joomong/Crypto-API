@@ -1,18 +1,19 @@
 #include <iostream>
 #include <string>
 
-#include "binance.h"
+#include "../src/binance.h"
 
 int main(){
-    std::string api_key;
-    std::string api_secret;
-
+    std::string api_key("rqUkbaF9xvMrRJQs9m87g2GlgxMKkaHQUiMHFInTTBoJxzFG8hM9tdXpSN0fj0PY");
+    std::string api_secret("JSy54Uaw62k898J17mRPmC8ptL2VBdBTTORr4x3pOflH6dFDa0NeIFw279Pzyvex");
+//    std::string api_key;
+//    std::string api_secret;
     Binance binance(api_key, api_secret);
     Json::Value result_json;
     std::string ticker = "BTCUSDT";
 
-//    //Public API
-//    // sever time
+    //Public API
+    // sever time
 //    Binance::GetServerTime(result_json);
 //    std::cout << result_json << std::endl;
 //
@@ -63,22 +64,25 @@ int main(){
     // Private API
     // limit sell
     double quantity = 0.001;
-    double price = 10000;
-
-    binance.PostLimitSell(ticker, quantity, price, result_json);
-    std::cout << result_json << std::endl;
-
-    // limit buy
-    binance.PostLimitBuy(ticker, quantity, price, result_json);
-    std::cout << result_json << std::endl;
+    double sell_price = 40000;
+    double buy_price = 20000;
 
     // market buy
-    binance.PostMarketBuy(ticker, quantity, result_json);
-    std::cout << result_json << std::endl;
+//    binance.PostMarketBuy(ticker, quantity, result_json);
+//    std::cout << result_json << std::endl;
 
-    // market sell
-    binance.PostMarketSell(ticker, quantity, result_json);
-    std::cout << result_json << std::endl;
+    // limit sell
+//    binance.PostLimitSell(ticker, quantity, sell_price, result_json);
+//    std::cout << result_json << std::endl;
+
+//    // market sell
+//    binance.PostMarketSell(ticker, quantity, result_json);
+//    std::cout << result_json << std::endl;
+//
+//    // limit buy
+//    binance.PostLimitBuy(ticker, quantity, buy_price, result_json);
+//    std::cout << result_json << std::endl;
+
 
 
 

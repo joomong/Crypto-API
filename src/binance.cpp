@@ -130,19 +130,22 @@ void Binance::PostLimitSell(const std::string &symbol,
                                  Json::Value &json_result)
 {
     std::string url(BINANCE_HOST);
-    url += "/api/v3/order";
+    url += "/api/v3/order?";
     std::string action = "POST";
     std::string result;
     std::string post_data = "symbol=" + symbol + "&side=SELL" +
-                            "&type=LIMIT_MAKER" + "&timeInForce=GTC" +
+                            "&type=LIMIT" + "&timeInForce=GTC" +
                             "&quantity=" + std::to_string(quantity) +
                             "&price=" + std::to_string(price)
                             +"&timestamp=" + std::to_string(GetCurrentMsEpoch());
 
-    std::string signature = hmac_sha256(API_SECRET.c_str(), post_data.c_str());
+    std::string signature = hmac_sha256(post_data.c_str(),API_SECRET.c_str());
     post_data += "&signature=" + signature;
 
-    std::vector<std::string> extra_http_header{"X-MBX-APIKEY: " + API_KEY};
+    std::vector<std::string> extra_http_header;
+    std::string header_chunk("X-MBX-APIKEY: ");
+    header_chunk.append(API_KEY);
+    extra_http_header.push_back(header_chunk);
 
     std::string str_result;
     CurlApiWithHeader(url, str_result, extra_http_header, post_data, action);
@@ -169,7 +172,7 @@ void Binance::PostLimitBuy(const std::string &symbol,
                                  Json::Value &json_result)
 {
     std::string url(BINANCE_HOST);
-    url += "/api/v3/order";
+    url += "/api/v3/order?";
     std::string action = "POST";
     std::string result;
     std::string post_data = "symbol=" + symbol + "&side=BUY" +
@@ -178,7 +181,7 @@ void Binance::PostLimitBuy(const std::string &symbol,
                             "&price=" + std::to_string(price)
                             +"&timestamp=" + std::to_string(GetCurrentMsEpoch());
 
-    std::string signature = hmac_sha256(API_SECRET.c_str(), post_data.c_str());
+    std::string signature = hmac_sha256(post_data.c_str(),API_SECRET.c_str());
     post_data += "&signature=" + signature;
 
     std::vector<std::string> extra_http_header{"X-MBX-APIKEY: " + API_KEY};
@@ -207,7 +210,7 @@ void Binance::PostMarketBuy(const std::string &symbol,
                                 Json::Value &json_result) 
 {
     std::string url(BINANCE_HOST);
-    url += "/api/v3/order";
+    url += "/api/v3/order?";
     std::string action = "POST";
     std::string result;
     std::string post_data = "symbol=" + symbol + "&side=BUY" +
@@ -215,7 +218,7 @@ void Binance::PostMarketBuy(const std::string &symbol,
                             "&quantity=" + std::to_string(quantity) +
                             "&timestamp=" + std::to_string(GetCurrentMsEpoch());
 
-    std::string signature = hmac_sha256(API_SECRET.c_str(), post_data.c_str());
+    std::string signature = hmac_sha256(post_data.c_str(),API_SECRET.c_str());
     post_data += "&signature=" + signature;
 
     std::vector<std::string> extra_http_header{"X-MBX-APIKEY: " + API_KEY};
@@ -244,7 +247,7 @@ void Binance::PostMarketSell(const std::string &symbol,
                                 Json::Value &json_result) 
 {
     std::string url(BINANCE_HOST);
-    url += "/api/v3/order";
+    url += "/api/v3/order?";
     std::string action = "POST";
     std::string result;
     std::string post_data = "symbol=" + symbol + "&side=SELL" +
@@ -252,7 +255,7 @@ void Binance::PostMarketSell(const std::string &symbol,
                             "&quantity=" + std::to_string(quantity) +
                             "&timestamp=" + std::to_string(GetCurrentMsEpoch());
 
-    std::string signature = hmac_sha256(API_SECRET.c_str(), post_data.c_str());
+    std::string signature = hmac_sha256(post_data.c_str(),API_SECRET.c_str());
     post_data += "&signature=" + signature;
 
     std::vector<std::string> extra_http_header{"X-MBX-APIKEY: " + API_KEY};
@@ -334,7 +337,7 @@ void Binance::PostOrders(const std::string &symbol,
 
         post_data += "&timestamp=" + std::to_string(GetCurrentMsEpoch());
 
-        std::string signature = hmac_sha256(API_SECRET.c_str(), post_data.c_str());
+        std::string signature = hmac_sha256(post_data.c_str(),API_SECRET.c_str());
         post_data += "&signature=" + signature;
 
         std::vector<std::string> extra_http_header{ "X-MBX-APIKEY: " + API_KEY};
@@ -385,7 +388,7 @@ void Binance::CancelOrder(const std::string &symbol,
     }
 
 
-    std::string signature =  hmac_sha256( API_SECRET.c_str(), post_data.c_str() );
+    std::string signature =  hmac_sha256(post_data.c_str(),API_SECRET.c_str());
     post_data += "&signature=" + signature;
 
     std::vector <std::string> extra_http_header;
@@ -439,7 +442,7 @@ void Binance::CancelAllOrders(const std::string &symbol,
     }
 
 
-    std::string signature = hmac_sha256(API_SECRET.c_str(), post_data.c_str());
+    std::string signature = hmac_sha256(post_data.c_str(),API_SECRET.c_str());
     post_data += "&signature=" + signature;
 
     std::vector<std::string> extra_http_header;
@@ -584,7 +587,7 @@ void Binance::ReplaceOrder(
         post_data.append(std::to_string(recv_window));
     }
 
-    std::string signature = hmac_sha256(API_SECRET.c_str(), post_data.c_str());
+    std::string signature = hmac_sha256(post_data.c_str(),API_SECRET.c_str());
     post_data += "&signature=" + signature;
 
     std::vector<std::string> extra_http_header;
@@ -622,7 +625,7 @@ void Binance::GetCurrentOpenOrders(const std::string &symbol,
             "symbol=" + std::string(symbol) +
             "&timestamp=" + std::to_string(GetCurrentMsEpoch());
 
-    std::string signature = hmac_sha256(API_SECRET.c_str(), post_data.c_str());
+    std::string signature = hmac_sha256(post_data.c_str(),API_SECRET.c_str());
     post_data += "&signature=" + signature;
 
     std::vector<std::string> extra_http_header;
@@ -665,7 +668,7 @@ void Binance::GetOrders(const std::string &symbol,
     std::string post_data = "symbol=" + std::string(symbol) +
                             "&timestamp=" + std::to_string(GetCurrentMsEpoch());
 
-    std::string signature = hmac_sha256(API_SECRET.c_str(), post_data.c_str());
+    std::string signature = hmac_sha256(post_data.c_str(),API_SECRET.c_str());
     post_data += "&signature=" + signature;
 
     if (orderId > 0) {
@@ -726,7 +729,7 @@ void Binance::GetAccountInfo(Json::Value &json_result)
 
     std::string post_data = "&timestamp=" + std::to_string(GetCurrentMsEpoch());
 
-    std::string signature = hmac_sha256(API_SECRET.c_str(), post_data.c_str());
+    std::string signature = hmac_sha256(post_data.c_str(),API_SECRET.c_str());
     post_data += "&signature=" + signature;
 
     std::vector<std::string> extra_http_header;
@@ -798,7 +801,7 @@ void Binance::GetAccountTradeList(const std::string &symbol,
         post_data.append(std::to_string(recvWindow));
     }
 
-    std::string signature = hmac_sha256(API_SECRET.c_str(), post_data.c_str());
+    std::string signature = hmac_sha256(post_data.c_str(),API_SECRET.c_str());
     post_data += "&signature=" + signature;
 
     std::vector<std::string> extra_http_header;
@@ -833,7 +836,7 @@ void Binance::GetUserStreamKey(Json::Value &json_result)
 
 
     std::string url(BINANCE_HOST);
-    url += "/api/v1/userDataStream";
+    url += "/api/v1/userDataStream?";
 
     std::vector<std::string> extra_http_header;
     std::string header_chunk("X-MBX-APIKEY: ");
@@ -876,7 +879,7 @@ void Binance::KeepAliveUserStreamKey(const std::string &listenKey)
 
 
     std::string url(BINANCE_HOST);
-    url += "/api/v1/userDataStream";
+    url += "/api/v1/userDataStream?";
 
     std::vector <std::string> extra_http_header;
     std::string header_chunk("X-MBX-APIKEY: ");
@@ -910,7 +913,7 @@ void Binance::CloseUserStreamKey(const std::string &listenKey)
 
 
     std::string url(BINANCE_HOST);
-    url += "/api/v1/userDataStream";
+    url += "/api/v1/userDataStream?";
 
     std::vector <std::string> extra_http_header;
     std::string header_chunk("X-MBX-APIKEY: ");

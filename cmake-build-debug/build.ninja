@@ -80,16 +80,23 @@ build cmake_object_order_depends_target_binance-example: phony || example/CMakeF
 build example/CMakeFiles/binance-example.dir/binance_example.cpp.o: CXX_COMPILER__binance-example_Debug /Users/joomong/project/Crypto-API/example/binance_example.cpp || cmake_object_order_depends_target_binance-example
   DEP_FILE = example/CMakeFiles/binance-example.dir/binance_example.cpp.o.d
   FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk -fcolor-diagnostics -std=gnu++14
-  INCLUDES = -I/Users/joomong/project/Crypto-API/example/../include -I/Users/joomong/project/Crypto-API/example/../src/json -I/opt/homebrew/opt/curl/include -I/opt/homebrew/opt/openssl@1.1/include
+  INCLUDES = -I/Users/joomong/project/Crypto-API/example/../include -I/Users/joomong/project/Crypto-API/example/../src/json -I/opt/homebrew/opt/curl/include -I/opt/homebrew/opt/openssl@1.1/include -I/opt/homebrew/opt/libwebsockets/include
   OBJECT_DIR = example/CMakeFiles/binance-example.dir
   OBJECT_FILE_DIR = example/CMakeFiles/binance-example.dir
 
 build example/CMakeFiles/binance-example.dir/__/src/jsoncpp.cpp.o: CXX_COMPILER__binance-example_Debug /Users/joomong/project/Crypto-API/src/jsoncpp.cpp || cmake_object_order_depends_target_binance-example
   DEP_FILE = example/CMakeFiles/binance-example.dir/__/src/jsoncpp.cpp.o.d
   FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk -fcolor-diagnostics -std=gnu++14
-  INCLUDES = -I/Users/joomong/project/Crypto-API/example/../include -I/Users/joomong/project/Crypto-API/example/../src/json -I/opt/homebrew/opt/curl/include -I/opt/homebrew/opt/openssl@1.1/include
+  INCLUDES = -I/Users/joomong/project/Crypto-API/example/../include -I/Users/joomong/project/Crypto-API/example/../src/json -I/opt/homebrew/opt/curl/include -I/opt/homebrew/opt/openssl@1.1/include -I/opt/homebrew/opt/libwebsockets/include
   OBJECT_DIR = example/CMakeFiles/binance-example.dir
   OBJECT_FILE_DIR = example/CMakeFiles/binance-example.dir/__/src
+
+build example/CMakeFiles/binance-example.dir/ws-exampe.cpp.o: CXX_COMPILER__binance-example_Debug /Users/joomong/project/Crypto-API/example/ws-exampe.cpp || cmake_object_order_depends_target_binance-example
+  DEP_FILE = example/CMakeFiles/binance-example.dir/ws-exampe.cpp.o.d
+  FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk -fcolor-diagnostics -std=gnu++14
+  INCLUDES = -I/Users/joomong/project/Crypto-API/example/../include -I/Users/joomong/project/Crypto-API/example/../src/json -I/opt/homebrew/opt/curl/include -I/opt/homebrew/opt/openssl@1.1/include -I/opt/homebrew/opt/libwebsockets/include
+  OBJECT_DIR = example/CMakeFiles/binance-example.dir
+  OBJECT_FILE_DIR = example/CMakeFiles/binance-example.dir
 
 
 # =============================================================================
@@ -99,14 +106,54 @@ build example/CMakeFiles/binance-example.dir/__/src/jsoncpp.cpp.o: CXX_COMPILER_
 #############################################
 # Link the executable example/binance-example
 
-build example/binance-example: CXX_EXECUTABLE_LINKER__binance-example_Debug example/CMakeFiles/binance-example.dir/binance_example.cpp.o example/CMakeFiles/binance-example.dir/__/src/jsoncpp.cpp.o | /Users/joomong/project/Crypto-API/example/../cmake-build-debug/lib/libcryptoapi.a /opt/homebrew/opt/curl/lib/libcurl.dylib /opt/homebrew/opt/openssl@1.1/lib/libcrypto.dylib
+build example/binance-example: CXX_EXECUTABLE_LINKER__binance-example_Debug example/CMakeFiles/binance-example.dir/binance_example.cpp.o example/CMakeFiles/binance-example.dir/__/src/jsoncpp.cpp.o example/CMakeFiles/binance-example.dir/ws-exampe.cpp.o | /Users/joomong/project/Crypto-API/example/../cmake-build-debug/lib/libcryptoapi.a /opt/homebrew/opt/curl/lib/libcurl.dylib /opt/homebrew/opt/openssl@1.1/lib/libcrypto.dylib /opt/homebrew/opt/libwebsockets/lib/libwebsockets.dylib
   FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk
-  LINK_LIBRARIES = /Users/joomong/project/Crypto-API/example/../cmake-build-debug/lib/libcryptoapi.a  /opt/homebrew/opt/curl/lib/libcurl.dylib  /opt/homebrew/opt/openssl@1.1/lib/libcrypto.dylib
+  LINK_LIBRARIES = /Users/joomong/project/Crypto-API/example/../cmake-build-debug/lib/libcryptoapi.a  /opt/homebrew/opt/curl/lib/libcurl.dylib  /opt/homebrew/opt/openssl@1.1/lib/libcrypto.dylib  /opt/homebrew/opt/libwebsockets/lib/libwebsockets.dylib
   OBJECT_DIR = example/CMakeFiles/binance-example.dir
   POST_BUILD = :
   PRE_LINK = :
   TARGET_FILE = example/binance-example
   TARGET_PDB = binance-example.dbg
+
+# =============================================================================
+# Object build statements for EXECUTABLE target ws-example
+
+
+#############################################
+# Order-only phony target for ws-example
+
+build cmake_object_order_depends_target_ws-example: phony || example/CMakeFiles/ws-example.dir
+
+build example/CMakeFiles/ws-example.dir/ws-exampe.cpp.o: CXX_COMPILER__ws-example_Debug /Users/joomong/project/Crypto-API/example/ws-exampe.cpp || cmake_object_order_depends_target_ws-example
+  DEP_FILE = example/CMakeFiles/ws-example.dir/ws-exampe.cpp.o.d
+  FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk -fcolor-diagnostics -std=gnu++14
+  INCLUDES = -I/Users/joomong/project/Crypto-API/example/../include -I/Users/joomong/project/Crypto-API/example/../src/json -I/opt/homebrew/opt/curl/include -I/opt/homebrew/opt/openssl@1.1/include -I/opt/homebrew/opt/libwebsockets/include
+  OBJECT_DIR = example/CMakeFiles/ws-example.dir
+  OBJECT_FILE_DIR = example/CMakeFiles/ws-example.dir
+
+build example/CMakeFiles/ws-example.dir/__/src/jsoncpp.cpp.o: CXX_COMPILER__ws-example_Debug /Users/joomong/project/Crypto-API/src/jsoncpp.cpp || cmake_object_order_depends_target_ws-example
+  DEP_FILE = example/CMakeFiles/ws-example.dir/__/src/jsoncpp.cpp.o.d
+  FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk -fcolor-diagnostics -std=gnu++14
+  INCLUDES = -I/Users/joomong/project/Crypto-API/example/../include -I/Users/joomong/project/Crypto-API/example/../src/json -I/opt/homebrew/opt/curl/include -I/opt/homebrew/opt/openssl@1.1/include -I/opt/homebrew/opt/libwebsockets/include
+  OBJECT_DIR = example/CMakeFiles/ws-example.dir
+  OBJECT_FILE_DIR = example/CMakeFiles/ws-example.dir/__/src
+
+
+# =============================================================================
+# Link build statements for EXECUTABLE target ws-example
+
+
+#############################################
+# Link the executable example/ws-example
+
+build example/ws-example: CXX_EXECUTABLE_LINKER__ws-example_Debug example/CMakeFiles/ws-example.dir/ws-exampe.cpp.o example/CMakeFiles/ws-example.dir/__/src/jsoncpp.cpp.o | /Users/joomong/project/Crypto-API/example/../cmake-build-debug/lib/libcryptoapi.a /opt/homebrew/opt/curl/lib/libcurl.dylib /opt/homebrew/opt/openssl@1.1/lib/libcrypto.dylib /opt/homebrew/opt/libwebsockets/lib/libwebsockets.dylib
+  FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk
+  LINK_LIBRARIES = /Users/joomong/project/Crypto-API/example/../cmake-build-debug/lib/libcryptoapi.a  /opt/homebrew/opt/curl/lib/libcurl.dylib  /opt/homebrew/opt/openssl@1.1/lib/libcrypto.dylib  /opt/homebrew/opt/libwebsockets/lib/libwebsockets.dylib
+  OBJECT_DIR = example/CMakeFiles/ws-example.dir
+  POST_BUILD = :
+  PRE_LINK = :
+  TARGET_FILE = example/ws-example
+  TARGET_PDB = ws-example.dbg
 
 
 #############################################
@@ -215,6 +262,8 @@ build cryptoapi: phony lib/libcryptoapi.a
 
 build libcryptoapi.a: phony lib/libcryptoapi.a
 
+build ws-example: phony example/ws-example
+
 # =============================================================================
 # Folder targets.
 
@@ -230,7 +279,7 @@ build all: phony example/all src/all
 #############################################
 # Folder: /Users/joomong/project/Crypto-API/cmake-build-debug/example
 
-build example/all: phony example/binance-example
+build example/all: phony example/binance-example example/ws-example
 
 # =============================================================================
 

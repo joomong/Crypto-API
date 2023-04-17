@@ -21,9 +21,9 @@ link_directories(
 )
 
 target_link_libraries(cryptoapi
-        ${brew}/curl/lib/libcurl.a
-        ${brew}/openssl@1.1/lib/libcrypto.a
-        ${brew}/libwebsockets/lib/libwebsockets.a)
+        ${brew}/curl/lib/libcurl.dylib
+        ${brew}/openssl@1.1/lib/libcrypto.dylib
+        ${brew}/libwebsockets/lib/libwebsockets.dylib)
 
 
 target_include_directories(cryptoapi PUBLIC ../include

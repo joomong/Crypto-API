@@ -22,8 +22,9 @@ public:
     Exchange()
     {curl_ = curl_easy_init();
     curl_global_init(CURL_GLOBAL_ALL);
-    struct lws_context_creation_info info;
-    memset( &info, 0, sizeof(info) );
+
+    struct lws_context_creation_info info{};
+    memset(&info,0,sizeof(info));
 
     info.port = CONTEXT_PORT_NO_LISTEN;
     info.protocols = protocols;
@@ -31,7 +32,8 @@ public:
     info.uid = -1;
     info.options |= LWS_SERVER_OPTION_DO_SSL_GLOBAL_INIT;
 
-    context = lws_create_context( &info );}
+    context = lws_create_context( &info );
+    }
 
     static void CurlApi(std::string &url, std::string &result_json);
     static void CurlApiWithHeader(std::string &url,
@@ -56,7 +58,7 @@ public:
 
     static std::map <struct lws *,CB> handles ;
     static int  event_cb( struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len );
-    static void connect_endpoint(CB user_cb,const char* path);
+    static void connect_endpoint(CB user_cb,const char *host,int port,const char* path);
     static void enter_event_loop();
 };
 
