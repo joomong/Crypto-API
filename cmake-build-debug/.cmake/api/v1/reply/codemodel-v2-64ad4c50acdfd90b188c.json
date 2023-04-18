@@ -75,7 +75,7 @@
 				{
 					"directoryIndex" : 1,
 					"id" : "binance-example::@70983d692f648185febe",
-					"jsonFile" : "target-binance-example-Debug-9e474dd41925bea29bff.json",
+					"jsonFile" : "target-binance-example-Debug-ae8b30fd4692a87e2b91.json",
 					"name" : "binance-example",
 					"projectIndex" : 0
 				},
@@ -89,7 +89,7 @@
 				{
 					"directoryIndex" : 1,
 					"id" : "ws-example::@70983d692f648185febe",
-					"jsonFile" : "target-ws-example-Debug-96d0623e4a886e1cde27.json",
+					"jsonFile" : "target-ws-example-Debug-a2bb1f56ce7665edc64c.json",
 					"name" : "ws-example",
 					"projectIndex" : 0
 				}

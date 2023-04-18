@@ -58,7 +58,7 @@ public:
 
     static std::map <struct lws *,CB> handles ;
     static int  event_cb( struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len );
-    static void connect_endpoint(CB user_cb,const char *host,int port,const char* path);
+    static void connect_endpoint(CB user_cb,const std::string &host,int port,const char* path);
     static void enter_event_loop();
 };
 

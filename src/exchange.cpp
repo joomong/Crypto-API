@@ -176,15 +176,16 @@ int Exchange::event_cb(struct lws *wsi, enum lws_callback_reasons reason, void *
 }
 
 
-void Exchange::connect_endpoint (CB cb,const char *host ,int port, const char *path)
+void Exchange::connect_endpoint (CB cb,const std::string &host ,int port, const char *path)
 {
+    std::cout << host << port << path << std::endl;
     char ws_path[1024];
     strcpy( ws_path, path );
 
     /* Connect if we are not connected to the server. */
     struct lws_client_connect_info ccinfo = {};
     ccinfo.context 	= context;
-    ccinfo.address 	= host;
+    ccinfo.address 	= host.c_str();
     ccinfo.port 	= port;
     ccinfo.path 	= ws_path;
     ccinfo.host 	= lws_canonical_hostname(context);

@@ -4,7 +4,7 @@
 #include "exchange.h"
 
 #define BINANCE_HOST "https://api.binance.com"
-#define BINANCE_WS_HOST "wss://stream.binance.com:9443/ws"
+#define BINANCE_WS_HOST "stream.binance.com"
 #define BINANCE_WS_PORT 9443
 
 class Binance : public Exchange {

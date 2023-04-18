@@ -1,11 +1,9 @@
-#include <iostream>
 #include <string>
-
 #include "../src/binance.h"
 
 int main(){
-    std::string api_key("rqUkbaF9xvMrRJQs9m87g2GlgxMKkaHQUiMHFInTTBoJxzFG8hM9tdXpSN0fj0PY");
-    std::string api_secret("JSy54Uaw62k898J17mRPmC8ptL2VBdBTTORr4x3pOflH6dFDa0NeIFw279Pzyvex");
+    std::string api_key("");
+    std::string api_secret("");
 //    std::string api_key;
 //    std::string api_secret;
     Binance binance(api_key, api_secret);
@@ -59,11 +57,9 @@ int main(){
 //    std::cout << result_json << std::endl;
 
 
-
-
     // Private API
     // limit sell
-    double quantity = 0.001;
+    double quantity = 0.0009;
     double sell_price = 40000;
     double buy_price = 20000;
 
@@ -75,7 +71,7 @@ int main(){
 //    binance.PostLimitSell(ticker, quantity, sell_price, result_json);
 //    std::cout << result_json << std::endl;
 
-//    // market sell
+    // market sell
 //    binance.PostMarketSell(ticker, quantity, result_json);
 //    std::cout << result_json << std::endl;
 //

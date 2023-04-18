@@ -13,8 +13,7 @@ include_directories(
         ${brew}/libwebsockets/include)
 
 add_executable(binance-example
-        binance_example.cpp
-        ../src/jsoncpp.cpp ws-exampe.cpp)
+        binance_example.cpp)
 
 target_link_libraries(binance-example
         ${CMAKE_CURRENT_SOURCE_DIR}/../cmake-build-debug/lib/libcryptoapi.a
