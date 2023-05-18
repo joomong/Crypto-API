@@ -12,7 +12,7 @@ set(LIBRARY_OUTPUT_PATH ../lib)
 add_library(cryptoapi STATIC
         binance.cpp
         exchange.cpp
-        jsoncpp.cpp)
+        jsoncpp.cpp binanceusdm.h binanceusdm.cpp)
 
 link_directories(
         ${brew}/libwebsockets/lib

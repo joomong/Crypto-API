@@ -1,8 +1,8 @@
-#include "binance.h"
+#include "binanceusdm.h"
 
-void Binance::GetServerTime(Json::Value &result_json) {
+void Binanceusdm::GetServerTime(Json::Value &result_json) {
     std::string url = BINANCE_HOST;
-    url += "/api/v3/time";
+    url += "/fapi/v1/time";
     std::string result;
     CurlApi(url, result);
     Json::Reader reader;
@@ -10,9 +10,9 @@ void Binance::GetServerTime(Json::Value &result_json) {
 }
 
 
-void Binance::GetExchangeInfo(Json::Value &result_json) {
+void Binanceusdm::GetExchangeInfo(Json::Value &result_json) {
     std::string url = BINANCE_HOST;
-    url += "/api/v3/exchangeInfo";
+    url += "/fapi/v1/exchangeInfo";
     std::string result;
     CurlApi(url, result);
     Json::Reader reader;
@@ -20,23 +20,22 @@ void Binance::GetExchangeInfo(Json::Value &result_json) {
 }
 
 
-void Binance::GetOrderBook(std::string &symbol,
+void Binanceusdm::GetOrderBook(std::string &symbol,
                            int limit,
                            Json::Value &result_json) {
     std::string url = BINANCE_HOST;
-    url += "/api/v3/depth?symbol=" + symbol + "&limit=" + std::to_string(limit);
+    url += "/fapi/v1/depth?symbol=" + symbol + "&limit=" + std::to_string(limit);
     std::string result;
     CurlApi(url, result);
     Json::Reader reader;
     reader.parse(result, result_json);
 }
 
-
-void Binance::GetRecentTrades(std::string &symbol,
+void Binanceusdm::GetRecentTrades(std::string &symbol,
                               int limit,
                               Json::Value &result_json) {
     std::string url = BINANCE_HOST;
-    url += "/api/v3/historicalTrades?symbol=" + symbol +
+    url += "/fapi/v1/trades?symbol=" + symbol +
            "&limit=" + std::to_string(limit);
     std::string result;
     CurlApi(url, result);
@@ -44,12 +43,23 @@ void Binance::GetRecentTrades(std::string &symbol,
     reader.parse(result, result_json);
 }
 
+void Binanceusdm::GetOldTradeLookup(std::string &symbol,
+                              int limit,
+                              Json::Value &result_json) {
+    std::string url = BINANCE_HOST;
+    url += "/fapi/v1/historicalTrades?symbol=" + symbol +
+                  "&limit=" + std::to_string(limit);
+    std::string result;
+    CurlApi(url, result);
+    Json::Reader reader;
+    reader.parse(result, result_json);
+}
 
-void Binance::GetAggTrades(std::string &symbol,
+void Binanceusdm::GetAggTrades(std::string &symbol,
                            int limit,
                            Json::Value &result_json) {
     std::string url = BINANCE_HOST;
-    url += "/api/v3/aggTrades?symbol=" + symbol +
+    url += "/fapi/v1/aggTrades?symbol=" + symbol +
            "&limit=" + std::to_string(limit);
     std::string result;
     CurlApi(url, result);
@@ -58,12 +68,12 @@ void Binance::GetAggTrades(std::string &symbol,
 }
 
 
-void Binance::GetKlines(std::string &symbol,
+void Binanceusdm::GetKlines(std::string &symbol,
                         std::string &interval,
                         int limit,
                         Json::Value &result_json) {
     std::string url = BINANCE_HOST;
-    url += "/api/v3/klines?symbol=" + symbol + "&interval=" + interval +
+    url += "/fapi/v1/klines?symbol=" + symbol + "&interval=" + interval +
            "&limit=" + std::to_string(limit);
     std::string result;
     CurlApi(url, result);
@@ -71,10 +81,70 @@ void Binance::GetKlines(std::string &symbol,
     reader.parse(result, result_json);
 }
 
-
-void Binance::GetAvgPrice(std::string &symbol, Json::Value &result_json) {
+void Binanceusdm::GetContinuousKlines(std::string &symbol, std::string &contractType,
+                                std::string &interval, int limit,
+                                Json::Value &result_json){
     std::string url = BINANCE_HOST;
-    url += "/api/v3/avgPrice?symbol=" + symbol;
+    url += "/fapi/v1/continuousKlines?symbol=" + symbol + "&interval=" + interval +
+           "&limit=" + std::to_string(limit);
+    std::string result;
+    CurlApi(url, result);
+    Json::Reader reader;
+    reader.parse(result, result_json);
+}
+
+void Binanceusdm::GetIndexPriceKlines(std::string &symbol, std::string &interval, int limit,
+                                Json::Value &result_json){
+    std::string url = BINANCE_HOST;
+    url += "/fapi/v1/indexPriceKlines?symbol=" + symbol + "&interval=" + interval +
+           "&limit=" + std::to_string(limit);
+    std::string result;
+    CurlApi(url, result);
+    Json::Reader reader;
+    reader.parse(result, result_json);
+}
+
+void Binanceusdm::GetMarkPriceKlines(std::string &symbol, std::string &interval, int limit,
+                               Json::Value &result_json){
+    std::string url = BINANCE_HOST;
+    url += "/fapi/v1/markPriceKlines?symbol=" + symbol + "&interval=" + interval +
+           "&limit=" + std::to_string(limit);
+    std::string result;
+    CurlApi(url, result);
+    Json::Reader reader;
+    reader.parse(result, result_json);
+}
+
+void Binanceusdm::GetMarkPrice(std::string &symbol, Json::Value &result_json) {
+    std::string url = BINANCE_HOST;
+    url += "/fapi/v1/premiumIndex?symbol=" + symbol;
+    std::string result;
+    CurlApi(url, result);
+    Json::Reader reader;
+    reader.parse(result, result_json);
+}
+
+void Binanceusdm::GetFundRate(std::string &symbol, Json::Value &result_json){
+    std::string url = BINANCE_HOST;
+    url += "/fapi/v1/fundingRate?symbol=" + symbol;
+    std::string result;
+    CurlApi(url, result);
+    Json::Reader reader;
+    reader.parse(result, result_json);
+}
+
+void Binanceusdm::Get24hrTicker(std::string &symbol, Json::Value &result_json){
+    std::string url = BINANCE_HOST;
+    url += "/fapi/v1/ticker/24hr?symbol=" + symbol;
+    std::string result;
+    CurlApi(url, result);
+    Json::Reader reader;
+    reader.parse(result, result_json);
+}
+
+void Binanceusdm::GetPriceTicker(Json::Value &result_json){
+    std::string url = BINANCE_HOST;
+    url += "/fapi/v1/ticker/price";
     std::string result;
     CurlApi(url, result);
     Json::Reader reader;
@@ -82,9 +152,99 @@ void Binance::GetAvgPrice(std::string &symbol, Json::Value &result_json) {
 }
 
 
-void Binance::Get24hrTicker(std::string &symbol, Json::Value &result_json) {
+void Binanceusdm::GetOrderBookTicker(std::string &symbol, Json::Value &result_json) {
     std::string url = BINANCE_HOST;
-    url += "/api/v3/ticker/24hr?symbol=" + symbol;
+    url += "/fapi/v1/ticker/bookTicker?symbol=" + symbol;
+    std::string result;
+    CurlApi(url, result);
+    Json::Reader reader;
+    reader.parse(result, result_json);
+}
+
+void Binanceusdm::GetOpenInterest(std::string &symbol, Json::Value &result_json){
+    std::string url = BINANCE_HOST;
+    url += "/fapi/v1/openInterest?symbol=" + symbol;
+    std::string result;
+    CurlApi(url, result);
+    Json::Reader reader;
+    reader.parse(result, result_json);
+}
+
+void Binanceusdm::GetOpenInterestStatistics(std::string &symbol, std::string &period, int limit,
+                               Json::Value &result_json){
+    std::string url = BINANCE_HOST;
+    url += "/fapi/v1/openInterestHist?symbol=" + symbol + "&period=" + period +
+           "&limit=" + std::to_string(limit);
+    std::string result;
+    CurlApi(url, result);
+    Json::Reader reader;
+    reader.parse(result, result_json);
+}
+
+void Binanceusdm::GetTopTraderLongShortAccount(std::string &symbol, std::string &period, int limit,
+                                Json::Value &result_json){
+    std::string url = BINANCE_HOST;
+    url += "/fapi/v1/topLongShortAccountRatio?symbol=" + symbol + "&period=" + period +
+           "&limit=" + std::to_string(limit);
+    std::string result;
+    CurlApi(url, result);
+    Json::Reader reader;
+    reader.parse(result, result_json);
+}
+
+void Binanceusdm::GetTopTraderLongShortPosition(std::string &symbol, std::string &period, int limit, Json::Value &result_json) {
+    std::string url = BINANCE_HOST;
+    url += "/fapi/v1/topLongShortPositionRatio?symbol=" + symbol + "&period=" + period +
+           "&limit=" + std::to_string(limit);
+    std::string result;
+    CurlApi(url, result);
+    Json::Reader reader;
+    reader.parse(result, result_json);
+}
+
+void Binanceusdm::GetLongShortRatio(std::string &symbol, std::string &period, int limit, Json::Value &result_json) {
+    std::string url = BINANCE_HOST;
+    url += "/fapi/v1/globalLongShortAccountRatio?symbol=" + symbol + "&period=" + period +
+           "&limit=" + std::to_string(limit);
+    std::string result;
+    CurlApi(url, result);
+    Json::Reader reader;
+    reader.parse(result, result_json);
+}
+
+void Binanceusdm::GetBuySellVolume(std::string &symbol, std::string &period, int limit, Json::Value &result_json) {
+    std::string url = BINANCE_HOST;
+    url += "/fapi/v1/takerlongshortRatio?symbol=" + symbol + "&period=" + period +
+           "&limit=" + std::to_string(limit);
+    std::string result;
+    CurlApi(url, result);
+    Json::Reader reader;
+    reader.parse(result, result_json);
+}
+
+void Binanceusdm::GetLvtKlines(std::string &symbol, std::string &interval, int limit,
+                  Json::Value &result_json){
+    std::string url = BINANCE_HOST;
+    url += "/fapi/v1/lvtKlines?symbol=" + symbol + "&interval=" + interval +
+           "&limit=" + std::to_string(limit);
+    std::string result;
+    CurlApi(url, result);
+    Json::Reader reader;
+    reader.parse(result, result_json);
+}
+
+void Binanceusdm::GetIndexInfo(std::string &symbol, Json::Value &result_json) {
+    std::string url = BINANCE_HOST;
+    url += "/fapi/v1/indexInfo?symbol=" + symbol;
+    std::string result;
+    CurlApi(url, result);
+    Json::Reader reader;
+    reader.parse(result, result_json);
+}
+
+void Binanceusdm::GetMultiModeAssetIndex(std::string &symbol, Json::Value &result_json) {
+    std::string url = BINANCE_HOST;
+    url += "/fapi/v1/multiModeAssetIndex?symbol=" + symbol;
     std::string result;
     CurlApi(url, result);
     Json::Reader reader;
@@ -92,42 +252,10 @@ void Binance::Get24hrTicker(std::string &symbol, Json::Value &result_json) {
 }
 
 
-void Binance::GetPriceTicker(Json::Value &result_json) {
-    std::string url = BINANCE_HOST;
-    url += "/api/v3/ticker/price";
-    std::string result;
-    CurlApi(url, result);
-    Json::Reader reader;
-    reader.parse(result, result_json);
-}
-
-
-void Binance::GetBookTicker(Json::Value &result_json)
-{
-    std::string url = BINANCE_HOST;
-    url += "/api/v3/ticker/bookTicker";
-    std::string result;
-    CurlApi(url, result);
-    Json::Reader reader;
-    reader.parse(result, result_json);
-}
-
-
-void Binance::GetRolling24hrTicker(Json::Value &result_json)
-{
-    std::string url = BINANCE_HOST;
-    url += "/api/v3/ticker/24hr";
-    std::string result;
-    CurlApi(url, result);
-    Json::Reader reader;
-    reader.parse(result, result_json);
-}
-
-
-void Binance::PostLimitSell(const std::string &symbol,
-                                 const double &quantity,
-                                 const double &price,
-                                 Json::Value &json_result)
+void Binanceusdm::PostLimitSell(const std::string &symbol,
+                            const double &quantity,
+                            const double &price,
+                            Json::Value &json_result)
 {
     std::string url(BINANCE_HOST);
     url += "/api/v3/order?";
@@ -152,6 +280,7 @@ void Binance::PostLimitSell(const std::string &symbol,
 
     if (!str_result.empty()) {
         try {
+            std::cout << str_result << std::endl;
             Json::Reader reader;
             json_result.clear();
             reader.parse(str_result, json_result);
@@ -159,16 +288,16 @@ void Binance::PostLimitSell(const std::string &symbol,
             std::cout << "<send_order> Error !" << e.what() << std::endl;
         }
     } else {
-        std::cout << "<send_order> Failed to get anything."
+        std::cout << "<BinaCPP::send_order> Failed to get anything."
                   << std::endl;
     }
 }
 
 
-void Binance::PostLimitBuy(const std::string &symbol,
-                                 const double &quantity,
-                                 const double &price,
-                                 Json::Value &json_result)
+void Binanceusdm::PostLimitBuy(const std::string &symbol,
+                           const double &quantity,
+                           const double &price,
+                           Json::Value &json_result)
 {
     std::string url(BINANCE_HOST);
     url += "/api/v3/order?";
@@ -190,6 +319,7 @@ void Binance::PostLimitBuy(const std::string &symbol,
 
     if (!str_result.empty()) {
         try {
+            std::cout << str_result << std::endl;
             Json::Reader reader;
             json_result.clear();
             reader.parse(str_result, json_result);
@@ -197,15 +327,15 @@ void Binance::PostLimitBuy(const std::string &symbol,
             std::cout << "<send_order> Error !" << e.what() << std::endl;
         }
     } else {
-        std::cout << "<send_order> Failed to get anything."
+        std::cout << "<BinaCPP::send_order> Failed to get anything."
                   << std::endl;
     }
 }
 
 
-void Binance::PostMarketBuy(const std::string &symbol,
-                                const double &quantity,
-                                Json::Value &json_result) 
+void Binanceusdm::PostMarketBuy(const std::string &symbol,
+                            const double &quantity,
+                            Json::Value &json_result)
 {
     std::string url(BINANCE_HOST);
     url += "/api/v3/order?";
@@ -240,9 +370,9 @@ void Binance::PostMarketBuy(const std::string &symbol,
 }
 
 
-void Binance::PostMarketSell(const std::string &symbol,
-                                const double &quantity,
-                                Json::Value &json_result) 
+void Binanceusdm::PostMarketSell(const std::string &symbol,
+                             const double &quantity,
+                             Json::Value &json_result)
 {
     std::string url(BINANCE_HOST);
     url += "/api/v3/order?";
@@ -277,13 +407,13 @@ void Binance::PostMarketSell(const std::string &symbol,
 }
 
 
-void Binance::PostOrders(const std::string &symbol, 
+void Binanceusdm::PostOrders(const std::string &symbol,
                          const std::string &side,
                          const std::string &type,
+                         const std::string &time_in_force,
                          const double &quantity,
                          const double &price,
                          Json::Value &json_result,
-                         const std::string &time_in_force,
                          const std::string &new_client_order_id,
                          const double &stop_price,
                          const double &iceberg_qty,
@@ -292,8 +422,8 @@ void Binance::PostOrders(const std::string &symbol,
     {
         if (API_KEY.empty() || API_SECRET.empty())
         {
-            std::cout << "API Key and Secret Key has not been set."
-            << std::endl;
+            std::cout << "<BinaCPP::send_order> API Key and Secret Key has not been set."
+                      << std::endl;
             return ;
         }
 
@@ -345,26 +475,27 @@ void Binance::PostOrders(const std::string &symbol,
 
         if (!str_result.empty()) {
             try {
+                std::cout << str_result << std::endl;
                 Json::Reader reader;
                 json_result.clear();
                 reader.parse(str_result, json_result);
             } catch (std::exception &e) {
-               std::cout << "<send_order> Error !" << e.what() << std::endl;
+                std::cout << "<send_order> Error !" << e.what() << std::endl;
             }
         } else {
-           std::cout << "<send_order> Failed to get anything." << std::endl;
+            std::cout << "<BinaCPP::send_order> Failed to get anything." << std::endl;
         }
     }
 }
 
 
-void Binance::CancelOrder(const std::string &symbol,
+void Binanceusdm::CancelOrder(const std::string &symbol,
                           const std::string &order_id,
                           Json::Value &json_result,
                           const long &recvWindow)
 {
     if ( API_KEY.empty() || API_SECRET.empty() ) {
-        std::cout <<  "API Key and Secret Key has not been set."
+        std::cout <<  "<BinaCPP::send_order> API Key and Secret Key has not been set."
                   <<  std::endl;
         return ;
     }
@@ -374,11 +505,11 @@ void Binance::CancelOrder(const std::string &symbol,
 
     std::string action = "DELETE";
 
-    std::string post_data = "symbol=" + symbol + 
+    std::string post_data = "symbol=" + symbol +
                             "&orderId=" + order_id +
                             "&timestamp=" + std::to_string(GetCurrentMsEpoch());
 
-    if (recvWindow > 0) 
+    if (recvWindow > 0)
     {
         post_data.append("&recvWindow=");
         post_data.append(std::to_string(recvWindow));
@@ -398,24 +529,24 @@ void Binance::CancelOrder(const std::string &symbol,
 
     if ( !str_result.empty() )
     {
-        try 
+        try
         {
             Json::Reader reader;
             json_result.clear();
             reader.parse(str_result, json_result );
 
         } catch ( std::exception &e ) {
-            std::cout <<  "Error !" << 
-             e.what() << std::endl;
+            std::cout <<  "Error !" <<
+                    e.what() << std::endl;
         }
-    } else 
+    } else
     {
         std::cout << "Failed to get anything." << std::endl;
     }
 }
 
 
-void Binance::CancelAllOrders(const std::string &symbol,
+void Binanceusdm::CancelAllOrders(const std::string &symbol,
                               Json::Value &json_result,
                               const long &recvWindow)
 {
@@ -464,34 +595,35 @@ void Binance::CancelAllOrders(const std::string &symbol,
     }
 }
 
-void Binance::ReplaceOrder(
-        const std::string &symbol, 
+void Binanceusdm::ReplaceOrder(
+        const std::string &symbol,
         const std::string &side,
         const std::string &type,
-        const std::string &cancel_replace_mode,
-        const double &quantity, 
+        const std::string &cancel_replace_mode, // must STOP_ON_FAILURE , ALLOW_FAILURE
+        const double &quantity,
         const double &price,
         Json::Value &json_result,
-        const std::string &time_in_force,
-        const double &quote_order_qty,
-        const std::string &cancel_new_client_order_id,
-        const std::string &cancel_orig_client_order_id,
-        const long &cancel_order_id,
+
+        const std::string &time_in_force, // GTC, IOC, FOK
+        const double &quote_order_qty, //ex usdt
+        const std::string &cancel_new_client_order_id, //Used to uniquely identify this cancel. Automatically generated by default.
+        const std::string &cancel_orig_client_order_id, //Either the cancelOrigClientOrderId or cancelOrderId must be provided. If both are provided, cancelOrderId takes precedence.
+        const long &cancel_order_id, //Either the cancelOrigClientOrderId or cancelOrderId must be provided. If both are provided, cancelOrderId takes precedence.
         const std::string &new_client_order_id,
         const int &strategy_id,
         const int &strategy_type,
         const double &stop_price,
-        const double &trailing_delta, 
+        const double &trailing_delta,
         const double &iceberg_qty,
-        const std::string &new_order_resp_type,
+        const std::string &new_order_resp_type, // ACK, RESULT, FULL?
         const std::string &self_trade_prevention_mode,
         const std::string &cancel_restrictions,
         const long &recv_window)
 {
-    if (API_KEY.empty()|| API_SECRET.empty()) 
+    if (API_KEY.empty()|| API_SECRET.empty())
     {
-        std::cout <<  "<replace_order> API Key and Secret Key has not been set."
-        << std::endl;
+        std::cout <<  "<BinaCPP::replace_order> API Key and Secret Key has not been set."
+                  << std::endl;
         return ;
     }
     std::string url(BINANCE_HOST);
@@ -499,7 +631,7 @@ void Binance::ReplaceOrder(
 
     std::string action("POST");
 
-    std::string post_data = "symbol=" + std::string(symbol) + 
+    std::string post_data = "symbol=" + std::string(symbol) +
                             "&side=" + std::string(side) +
                             "&type=" + std::string(type) +
                             "&cancelReplaceMode=" + std::string(cancel_replace_mode) +
@@ -609,29 +741,25 @@ void Binance::ReplaceOrder(
 }
 
 
-void Binance::GetCurrentOpenOrders(const std::string &symbol,
-                             Json::Value &json_result)
+void Binanceusdm::GetCurrentOpenOrders(const std::string &symbol,
+                                   Json::Value &json_result)
 {
     std::string url(BINANCE_HOST);
-    url += "/api/v3/openOrders?";
+    url += "/api/v3/openOrders?" ;
 
     std::string action("GET");
 
-    std::string querystring =
-            "symbol=" + symbol +
+    std::string post_data =
+            "symbol=" + std::string(symbol) +
             "&timestamp=" + std::to_string(GetCurrentMsEpoch());
 
-    std::string signature = hmac_sha256(querystring.c_str(),API_SECRET.c_str());
-    querystring += "&signature=" + signature;
-
-    url += querystring;
+    std::string signature = hmac_sha256(post_data.c_str(),API_SECRET.c_str());
+    post_data += "&signature=" + signature;
 
     std::vector<std::string> extra_http_header;
     std::string header_chunk("X-MBX-APIKEY: ");
     header_chunk.append(API_KEY);
     extra_http_header.push_back(header_chunk);
-
-    std::string post_data;
 
     std::string str_result;
     CurlApiWithHeader(url, str_result, extra_http_header, post_data, action);
@@ -652,7 +780,7 @@ void Binance::GetCurrentOpenOrders(const std::string &symbol,
 
 
 
-void Binance::GetOrders(const std::string &symbol, 
+void Binanceusdm::GetOrders(const std::string &symbol,
                         Json::Value &json_result,
                         const long &orderId,
                         const long &startTime,
@@ -661,45 +789,45 @@ void Binance::GetOrders(const std::string &symbol,
                         const long &recvWindow)
 {
     std::string url(BINANCE_HOST);
-    url += "/api/v3/allOrders?";
+    url += "/api/v3/openOrders?";
+
     std::string action("GET");
-    std::string post_data;
-    std::string querystring = "symbol=" + std::string(symbol) +
+
+    std::string post_data = "symbol=" + std::string(symbol) +
                             "&timestamp=" + std::to_string(GetCurrentMsEpoch());
-    std::string signature = hmac_sha256(querystring.c_str(),API_SECRET.c_str());
-    querystring += "&signature=" + signature;
+
+    std::string signature = hmac_sha256(post_data.c_str(),API_SECRET.c_str());
+    post_data += "&signature=" + signature;
 
     if (orderId > 0) {
-        querystring.append("&orderId=");
+        post_data.append("&orderId=");
         post_data.append(std::to_string(orderId));
     }
 
     if (startTime > 0) {
-        querystring.append("&startTime=");
-        querystring.append(std::to_string(startTime));
+        post_data.append("&startTime=");
+        post_data.append(std::to_string(startTime));
     }
 
     if (endTime > 0) {
-        querystring.append("&endTime=");
-        querystring.append(std::to_string(endTime));
+        post_data.append("&endTime=");
+        post_data.append(std::to_string(endTime));
     }
 
     if (limit > 0) {
-        querystring.append("&limit=");
-        querystring.append(std::to_string(limit));
+        post_data.append("&limit=");
+        post_data.append(std::to_string(limit));
     }
 
     if (recvWindow > 0) {
-        querystring.append("&recvWindow=");
-        querystring.append(std::to_string(recvWindow));
+        post_data.append("&recvWindow=");
+        post_data.append(std::to_string(recvWindow));
     }
 
     std::vector<std::string> extra_http_header;
     std::string header_chunk("X-MBX-APIKEY: ");
     header_chunk.append(API_KEY);
     extra_http_header.push_back(header_chunk);
-
-    url += querystring;
 
     std::string str_result;
     CurlApiWithHeader(url, str_result, extra_http_header, post_data, action);
@@ -719,27 +847,23 @@ void Binance::GetOrders(const std::string &symbol,
 }
 
 
-void Binance::GetAccountInfo(Json::Value &json_result)
+void Binanceusdm::GetAccountInfo(Json::Value &json_result)
 {
 
     std::string url(BINANCE_HOST);
-    url += "/api/v3/account?";
+    url += "/api/v3/Account?";
 
     std::string action("GET");
 
-    std::string post_data;
+    std::string post_data = "&timestamp=" + std::to_string(GetCurrentMsEpoch());
 
-    std::string querystring = "&timestamp=" + std::to_string(GetCurrentMsEpoch());
-
-    std::string signature = hmac_sha256(querystring.c_str(),API_SECRET.c_str());
-    querystring += "&signature=" + signature;
+    std::string signature = hmac_sha256(post_data.c_str(),API_SECRET.c_str());
+    post_data += "&signature=" + signature;
 
     std::vector<std::string> extra_http_header;
     std::string header_chunk("X-MBX-APIKEY: ");
     header_chunk.append(API_KEY);
     extra_http_header.push_back(header_chunk);
-
-    url += querystring;
 
     std::string str_result;
     CurlApiWithHeader(url, str_result, extra_http_header, post_data, action);
@@ -758,7 +882,7 @@ void Binance::GetAccountInfo(Json::Value &json_result)
     }
 }
 
-void Binance::GetAccountTradeList(const std::string &symbol,
+void Binanceusdm::GetAccountTradeList(const std::string &symbol,
                                   Json::Value &json_result,
                                   const long &orderId,
                                   const long &startTime,
@@ -772,49 +896,46 @@ void Binance::GetAccountTradeList(const std::string &symbol,
 
     std::string action("GET");
 
-    std::string querystring = "symbol=" + std::string(symbol) +
+    std::string post_data = "symbol=" + std::string(symbol) +
                             "&timestamp=" + std::to_string(GetCurrentMsEpoch());
-    
+
     if (orderId > 0) {
-        querystring.append("&orderId=");
-        querystring.append(std::to_string(orderId));
+        post_data.append("&orderId=");
+        post_data.append(std::to_string(orderId));
     }
 
     if (startTime > 0) {
-        querystring.append("&startTime=");
-        querystring.append(std::to_string(startTime));
+        post_data.append("&startTime=");
+        post_data.append(std::to_string(startTime));
     }
 
     if (endTime > 0) {
-        querystring.append("&endTime=");
-        querystring.append(std::to_string(endTime));
+        post_data.append("&endTime=");
+        post_data.append(std::to_string(endTime));
     }
 
     if (fromId > 0) {
-        querystring.append("&fromId=");
-        querystring.append(std::to_string(fromId));
+        post_data.append("&fromId=");
+        post_data.append(std::to_string(fromId));
     }
 
     if (limit > 0) {
-        querystring.append("&limit=");
-        querystring.append(std::to_string(limit));
+        post_data.append("&limit=");
+        post_data.append(std::to_string(limit));
     }
 
     if (recvWindow > 0) {
-        querystring.append("&recvWindow=");
-        querystring.append(std::to_string(recvWindow));
+        post_data.append("&recvWindow=");
+        post_data.append(std::to_string(recvWindow));
     }
 
-    std::string signature = hmac_sha256(querystring.c_str(),API_SECRET.c_str());
-    querystring += "&signature=" + signature;
+    std::string signature = hmac_sha256(post_data.c_str(),API_SECRET.c_str());
+    post_data += "&signature=" + signature;
 
     std::vector<std::string> extra_http_header;
     std::string header_chunk("X-MBX-APIKEY: ");
     header_chunk.append(API_KEY);
     extra_http_header.push_back(header_chunk);
-    std::string post_data;
-
-    url += querystring;
 
     std::string str_result;
     CurlApiWithHeader(url, str_result, extra_http_header, post_data, action);
@@ -833,11 +954,11 @@ void Binance::GetAccountTradeList(const std::string &symbol,
     }
 }
 
-void Binance::GetUserStreamKey(Json::Value &json_result)
+void Binanceusdm::GetUserStreamKey(Json::Value &json_result)
 {
     if (API_KEY.empty()) {
-        std::cout << "API Key has not been set."
-        << std::endl;
+        std::cout << "<BinaCPP::start_userDataStream> API Key has not been set."
+                  << std::endl;
         return;
     }
 
@@ -866,29 +987,31 @@ void Binance::GetUserStreamKey(Json::Value &json_result)
             reader.parse(str_result, json_result);
 
         } catch (std::exception &e) {
-            std::cout << "start_userDataStream Error ! " << e.what()
-            <<std::endl;
+            std::cout << "<BinaCPP::start_userDataStream> Error ! " << e.what()
+                      <<std::endl;
         }
     } else {
-            std::cout << "<start_userDataStream> Failed to get anything."
-            << std::endl;
+        std::cout << "<BinaCPP::start_userDataStream> Failed to get anything."
+                  << std::endl;
     }
 }
 
 
-void Binance::KeepAliveUserStreamKey(const std::string &listenKey)
+void Binanceusdm::KeepAliveUserStreamKey(const std::string &listenKey)
 {
     if (API_KEY.empty()) {
-        std::cout << "<keep_userDataStream> API Key has not been set."
-        << std::endl;
+        std::cout << "<BinaCPP::keep_userDataStream> API Key has not been set."
+                  << std::endl;
         return ;
     }
+
 
     std::string url(BINANCE_HOST);
     url += "/api/v1/userDataStream?";
 
     std::vector <std::string> extra_http_header;
     std::string header_chunk("X-MBX-APIKEY: ");
+
 
     header_chunk.append(API_KEY);
     extra_http_header.push_back(header_chunk);
@@ -902,17 +1025,17 @@ void Binance::KeepAliveUserStreamKey(const std::string &listenKey)
 
     if ( str_result.empty() )
     {
-        std::cout <<  "<keep_userDataStream> Failed to get anything."
-        << std::endl;
+        std::cout <<  "<BinaCPP::keep_userDataStream> Failed to get anything."
+                  << std::endl;
     }
 }
 
 
-void Binance::CloseUserStreamKey(const std::string &listenKey)
+void Binanceusdm::CloseUserStreamKey(const std::string &listenKey)
 {
     if ( API_KEY.empty() ) {
-        std::cout << "<close_userDataStream> API Key has not been set."
-        << std::endl; 
+        std::cout << "<BinaCPP::close_userDataStream> API Key has not been set."
+                  << std::endl;
         return ;
     }
 
@@ -936,7 +1059,7 @@ void Binance::CloseUserStreamKey(const std::string &listenKey)
 
     if ( str_result.empty() )
     {
-        std::cout << "<close_userDataStream> Failed to get anything."
-        << std::endl;
+        std::cout << "<BinaCPP::close_userDataStream> Failed to get anything."
+                  << std::endl;
     }
 }

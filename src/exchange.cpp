@@ -50,7 +50,7 @@ void Exchange::CurlApiWithHeader(std::string &url,
         /* Check for errors */
         if (res != CURLE_OK)
         {
-            std::cout << "<BinaCPP::curl_api> curl_easy_perform() failed: "
+            std::cout << "<curl_api> curl_easy_perform() failed: "
                       << curl_easy_strerror(res) << std::endl;
         }
     }
@@ -205,7 +205,7 @@ void Exchange::enter_event_loop()
         try {
             lws_service( context, 500 );
         } catch ( std::exception &e ) {
-            std::cout <<  "<BinaCPP_websocket::enter_event_loop> Error ! %s"
+            std::cout <<  "<websocket::enter_event_loop> Error ! %s"
                          << e.what();
             break;
         }
