@@ -8,11 +8,11 @@
 
 class Binanceusdm : public Exchange {
 private:
-    std::string API_KEY;
-    std::string API_SECRET;
+    static std::string API_KEY;
+    static std::string API_SECRET;
 public:
-    Binanceusdm(std::string &api_key, std::string &api_secret)
-        : Exchange(), API_KEY(api_key), API_SECRET(api_secret){};
+//    Binanceusdm(std::string &api_key, std::string &api_secret)
+//        : Exchange(), API_KEY(api_key), API_SECRET(api_secret){};
 
     //Public API
     static void GetServerTime(Json::Value &result_json);
@@ -80,25 +80,25 @@ public:
 
 
     //Private API
-    void PostLimitSell(const std::string &symbol,
+    static void PostLimitSell(const std::string &symbol,
                        const double &quantity,
                        const double &price,
                        Json::Value &json_result);
 
-    void PostLimitBuy(const std::string &symbol,
+    static void PostLimitBuy(const std::string &symbol,
                       const double &quantity,
                       const double &price,
                       Json::Value &json_result);
 
-    void PostMarketBuy(const std::string &symbol,
+    static void PostMarketBuy(const std::string &symbol,
                        const double &quantity,
                        Json::Value &json_result);
 
-    void PostMarketSell(const std::string &symbol,
+    static void PostMarketSell(const std::string &symbol,
                         const double &quantity,
                         Json::Value &json_result);
 
-    void PostOrders(const std::string &symbol,
+    static void PostOrders(const std::string &symbol,
                     const std::string &side,
                     const std::string &type,
                     const double &quantity,
@@ -118,7 +118,7 @@ public:
                     const double &iceberg_qty = 0.0,
                     const long &recv_window = 0);
 
-    void ModifyOrder(const std::string &order_id,
+    static void ModifyOrder(const std::string &order_id,
                      const std::string &symbol,
                      const std::string &side,
                      const double &quantity,
@@ -127,38 +127,38 @@ public:
                      const double &recv_window = 0.0,
                      const std::string &orig_client_order_id = "");
 
-    void GetOrder(const std::string &symbol,
+    static void GetOrder(const std::string &symbol,
                   const std::string &order_id,
                   Json::Value &json_result,
                   const long &recv_window = 0);
 
-    void CancelOrder(const std::string &symbol,
+    static void CancelOrder(const std::string &symbol,
                      const std::string &order_id,
                      Json::Value &json_result,
                      const long &recv_window = 0);
 
-    void CancelAllOrders(const std::string &symbol,
+    static void CancelAllOrders(const std::string &symbol,
                          Json::Value &json_result,
                          const long &recvWindow = 0);
 
-    void AutoCancelALLOpenOrders(const std::string &symbol,
+    static void AutoCancelALLOpenOrders(const std::string &symbol,
                                   const int &countdownTime,
                                   Json::Value &json_result);
 
-    void GetOpenOrder(const std::string &symbol,
+    static void GetOpenOrder(const std::string &symbol,
                       const long &order_id,
                        Json::Value &json_result,
                        const long &recv_window = 0);
 
-    void GetOpenOrders(const std::string &symbol,
+    static void GetOpenOrders(const std::string &symbol,
                        Json::Value &json_result,
                        const long &recv_window = 0);
 
-    void ChangeLeverage(const std::string &symbol,
+    static void ChangeLeverage(const std::string &symbol,
                         const int &leverage,
                         Json::Value &json_result);
 
-    void ChangeMarginType(const std::string &symbol,
+    static void ChangeMarginType(const std::string &symbol,
                           const std::string &marginType,
                           Json::Value &json_result);
 
@@ -177,11 +177,11 @@ public:
 //                             const long &recvWindow = 0);
 
 
-    void GetUserStreamKey(Json::Value &json_result);
+    static void GetUserStreamKey(Json::Value &json_result);
 
-    void CloseUserStreamKey(const std::string &listenKey);
+    static void CloseUserStreamKey(const std::string &listenKey);
 
-    void KeepAliveUserStreamKey(const std::string &listenKey);
+    static void KeepAliveUserStreamKey(const std::string &listenKey);
 
 };
 

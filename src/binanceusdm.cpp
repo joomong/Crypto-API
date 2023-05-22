@@ -818,8 +818,14 @@ void Binanceusdm::GetOpenOrder(const std::string &symbol,
     std::string querystring = "symbol=" + symbol +
                             "&orderId=" + std::to_string(order_id) +
                             "&timestamp=" + std::to_string(GetCurrentMsEpoch());
+    if (recv_window > 0) {
+        querystring.append("&recvWindow=");
+        querystring.append(std::to_string(recv_window));
+    }
+
     std::string signature = hmac_sha256(querystring.c_str(),API_SECRET.c_str());
     querystring += "&signature=" + signature;
+    url += querystring;
 
     std::vector<std::string> extra_http_header;
     std::string header_chunk("x-mbx-apikey: ");
