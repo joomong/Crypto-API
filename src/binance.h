@@ -9,11 +9,10 @@
 
 class Binance : public Exchange {
 private:
-    std::string API_KEY;
-    std::string API_SECRET;
+    static std::string API_KEY;
+    static std::string API_SECRET;
 public:
-    Binance(std::string &api_key, std::string &api_secret)
-        : Exchange(), API_KEY(api_key), API_SECRET(api_secret){};
+    static void init(std::string &api_key, std::string &api_secret);
 
     //Public API
     static void GetServerTime(Json::Value &result_json);
@@ -44,25 +43,25 @@ public:
 
 
     //Private API
-    void PostLimitSell(const std::string &symbol, 
+    static void PostLimitSell(const std::string &symbol,
                             const double &quantity,
                             const double &price, 
                             Json::Value &json_result);
 
-    void PostLimitBuy(const std::string &symbol, 
+    static void PostLimitBuy(const std::string &symbol,
                            const double &quantity,
                            const double &price, 
                            Json::Value &json_result);
 
-    void PostMarketBuy(const std::string &symbol,
+    static void PostMarketBuy(const std::string &symbol,
                             const double &quantity,
                             Json::Value &json_result);
 
-    void PostMarketSell(const std::string &symbol, 
+    static void PostMarketSell(const std::string &symbol,
                            const double &quantity, 
                            Json::Value &json_result);
 
-    void PostOrders(const std::string &symbol, 
+    static void PostOrders(const std::string &symbol,
                     const std::string &side,
                     const std::string &type,
                     const double &quantity,
@@ -77,21 +76,21 @@ public:
     // TODO: If market order, price is not required
     // TODO: If market order, time_in_force is not required
 
-    void CancelOrder(const std::string &symbol,
+    static void CancelOrder(const std::string &symbol,
                      const std::string &order_id,
                      Json::Value &json_result,
                      const long &recv_window = 0);
 
-    void CancelAllOrders(const std::string &symbol, 
+    static void CancelAllOrders(const std::string &symbol,
                          Json::Value &json_result,
                          const long &recvWindow = 0);
 
-    void ReplaceOrder(
-            const std::string &symbol, 
+    static void ReplaceOrder(
+            const std::string &symbol,
             const std::string &side,
             const std::string &type,
             const std::string &cancel_replace_mode, // must STOP_ON_FAILURE , ALLOW_FAILURE
-            const double &quantity, 
+            const double &quantity,
             const double &price,
             Json::Value &json_result,
             const std::string &time_in_force = "",
@@ -103,7 +102,7 @@ public:
             const int &strategy_id = 0,
             const int &strategy_type = 0,
             const double &stop_price = 0.0,
-            const double &trailing_delta = 0.0, 
+            const double &trailing_delta = 0.0,
             const double &iceberg_qty = 0.0,
             const std::string &new_order_resp_type = "",// ACK, RESULT, FULL?
             const std::string &self_trade_prevention_mode = "",
@@ -111,10 +110,10 @@ public:
             const long &recv_window = 0);
     //TODO: change the order of the parameters
 
-    void GetCurrentOpenOrders(const std::string &symbol, 
+    static void GetCurrentOpenOrders(const std::string &symbol,
                             Json::Value &json_result);
 
-    void GetOrders(const std::string &symbol, 
+    static void GetOrders(const std::string &symbol,
                   Json::Value &json_result,
                   const long &orderId = 0,
                   const long &startTime = 0,
@@ -122,9 +121,9 @@ public:
                   const long &limit = 0,
                   const long &recvWindow = 0);
 
-    void GetAccountInfo(Json::Value &json_result);
+    static void GetAccountInfo(Json::Value &json_result);
 
-    void GetAccountTradeList(const std::string &symbol,
+    static void GetAccountTradeList(const std::string &symbol,
                             Json::Value &json_result,
                             const long &orderId = 0,
                             const long &startTime = 0,
@@ -134,11 +133,11 @@ public:
                             const long &recvWindow = 0);
 
 
-    void GetUserStreamKey(Json::Value &json_result);
+    static void GetUserStreamKey(Json::Value &json_result);
 
-    void CloseUserStreamKey(const std::string &listenKey);
+    static void CloseUserStreamKey(const std::string &listenKey);
 
-    void KeepAliveUserStreamKey(const std::string &listenKey);
+    static void KeepAliveUserStreamKey(const std::string &listenKey);
 
 };
 
