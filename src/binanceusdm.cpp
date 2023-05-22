@@ -1,5 +1,11 @@
 #include "binanceusdm.h"
 
+void Binanceusdm::init(std::string &api_key, std::string &api_secret)
+{
+    API_KEY = api_key;
+    API_SECRET = api_secret;
+}
+
 void Binanceusdm::GetServerTime(Json::Value &result_json)
 {
     std::string url = BINANCEUSDM_HOST;
