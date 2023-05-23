@@ -1,7 +1,6 @@
 /Users/joomong/project/Crypto-API/cmake-build-debug/CMakeFiles/edit_cache.dir
 /Users/joomong/project/Crypto-API/cmake-build-debug/CMakeFiles/rebuild_cache.dir
 /Users/joomong/project/Crypto-API/cmake-build-debug/example/CMakeFiles/binance-example.dir
-/Users/joomong/project/Crypto-API/cmake-build-debug/example/CMakeFiles/ws-example.dir
 /Users/joomong/project/Crypto-API/cmake-build-debug/example/CMakeFiles/edit_cache.dir
 /Users/joomong/project/Crypto-API/cmake-build-debug/example/CMakeFiles/rebuild_cache.dir
 /Users/joomong/project/Crypto-API/cmake-build-debug/src/CMakeFiles/cryptoapi.dir

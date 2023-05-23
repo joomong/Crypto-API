@@ -1,7 +1,11 @@
 #include "binanceusdm.h"
 
+std::string Binanceusdm::API_KEY = "";
+std::string Binanceusdm::API_SECRET = "";
+
 void Binanceusdm::init(std::string &api_key, std::string &api_secret)
 {
+    Exchange::init();
     API_KEY = api_key;
     API_SECRET = api_secret;
 }

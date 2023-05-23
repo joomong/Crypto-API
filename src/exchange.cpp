@@ -2,6 +2,22 @@
 
 CURL *Exchange::curl_ = nullptr;
 
+void Exchange::init() {
+    curl_ = curl_easy_init();
+    curl_global_init(CURL_GLOBAL_ALL);
+
+    struct lws_context_creation_info info{};
+    memset(&info,0,sizeof(info));
+
+    info.port = CONTEXT_PORT_NO_LISTEN;
+    info.protocols = protocols;
+    info.gid = -1;
+    info.uid = -1;
+    info.options |= LWS_SERVER_OPTION_DO_SSL_GLOBAL_INIT;
+
+    context = lws_create_context( &info );
+
+}
 
 void Exchange::CurlApi(std::string &url, std::string &result_json) {
     std::vector<std::string> extra_http_header;

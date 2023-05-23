@@ -7,13 +7,10 @@
 #define BINANCE_WS_PORT 9443
 
 class Binanceusdm : public Exchange {
-private:
+public:
     static std::string API_KEY;
     static std::string API_SECRET;
-public:
     static void init(std::string &api_key, std::string &api_secret);
-//    Binanceusdm(std::string &api_key, std::string &api_secret)
-//        : Exchange(), API_KEY(api_key), API_SECRET(api_secret){};
 
     //Public API
     static void GetServerTime(Json::Value &result_json);

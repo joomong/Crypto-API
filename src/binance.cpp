@@ -1,9 +1,17 @@
 #include "binance.h"
 
+
+std::string Binance::API_KEY = "";
+std::string Binance::API_SECRET = "";
+
+
 void Binance::init(std::string &api_key, std::string &api_secret){
     API_KEY = api_key;
     API_SECRET = api_secret;
+    Exchange::init();
 }
+
+
 void Binance::GetServerTime(Json::Value &result_json) {
     std::string url = BINANCE_HOST;
     url += "/api/v3/time";
