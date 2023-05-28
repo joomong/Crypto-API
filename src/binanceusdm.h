@@ -4,7 +4,7 @@
 
 #define BINANCEUSDM_HOST "https://fapi.binance.com"
 #define BINANCEUSDM_WS_HOST "fstream.binance.com"
-#define BINANCE_WS_PORT 9443
+#define BINANCE_WS_PORT 443
 
 class Binanceusdm : public Exchange {
 public:

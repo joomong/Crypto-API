@@ -3,8 +3,8 @@
 CURL *Exchange::curl_ = nullptr;
 
 void Exchange::init() {
-    curl_ = curl_easy_init();
     curl_global_init(CURL_GLOBAL_ALL);
+    curl_ = curl_easy_init();
 
     struct lws_context_creation_info info{};
     memset(&info,0,sizeof(info));
@@ -16,7 +16,6 @@ void Exchange::init() {
     info.options |= LWS_SERVER_OPTION_DO_SSL_GLOBAL_INIT;
 
     context = lws_create_context( &info );
-
 }
 
 void Exchange::CurlApi(std::string &url, std::string &result_json) {
@@ -59,6 +58,10 @@ void Exchange::CurlApiWithHeader(std::string &url,
             if (action == "PUT" || action == "DELETE")
             {
                 curl_easy_setopt(curl_, CURLOPT_CUSTOMREQUEST, action.c_str());
+            }
+            else
+            {
+                curl_easy_setopt(curl_, CURLOPT_CUSTOMREQUEST,nullptr);
             }
             curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, post_data.c_str());
         }
