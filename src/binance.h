@@ -8,10 +8,9 @@
 #define BINANCE_WS_PORT 9443
 
 class Binance : public Exchange {
-private:
+public:
     static std::string API_KEY;
     static std::string API_SECRET;
-public:
     static void init(std::string &api_key, std::string &api_secret);
 
     //Public API

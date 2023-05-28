@@ -1,5 +1,15 @@
 #include "binanceusdm.h"
 
+std::string Binanceusdm::API_KEY = "";
+std::string Binanceusdm::API_SECRET = "";
+
+void Binanceusdm::init(std::string &api_key, std::string &api_secret)
+{
+    Exchange::init();
+    API_KEY = api_key;
+    API_SECRET = api_secret;
+}
+
 void Binanceusdm::GetServerTime(Json::Value &result_json)
 {
     std::string url = BINANCEUSDM_HOST;
@@ -271,26 +281,27 @@ void Binanceusdm::PostLimitSell(const std::string &symbol,
     url += "/fapi/v1/order?";
     std::string action = "POST";
     std::string result;
-    std::string post_data = "symbol=" + symbol + "&side=SELL" +
+    std::string querystring = "symbol=" + symbol + "&side=SELL" +
                             "&type=LIMIT" + "&timeInForce=GTC" +
                             "&quantity=" + std::to_string(quantity) +
                             "&price=" + std::to_string(price)
                             +"&timestamp=" + std::to_string(GetCurrentMsEpoch());
 
-    std::string signature = hmac_sha256(post_data.c_str(),API_SECRET.c_str());
-    post_data += "&signature=" + signature;
+    std::string signature = hmac_sha256(querystring.c_str(),API_SECRET.c_str());
+    querystring += "&signature=" + signature;
+    url += querystring;
 
     std::vector<std::string> extra_http_header;
     std::string header_chunk("X-MBX-APIKEY: ");
     header_chunk.append(API_KEY);
     extra_http_header.push_back(header_chunk);
+    std::string post_data;
 
     std::string str_result;
     CurlApiWithHeader(url, str_result, extra_http_header, post_data, action);
 
     if (!str_result.empty()) {
         try {
-            std::cout << str_result << std::endl;
             Json::Reader reader;
             json_result.clear();
             reader.parse(str_result, json_result);
@@ -298,7 +309,7 @@ void Binanceusdm::PostLimitSell(const std::string &symbol,
             std::cout << "<send_order> Error !" << e.what() << std::endl;
         }
     } else {
-        std::cout << "<BinaCPP::send_order> Failed to get anything."
+        std::cout << "<send_order> Failed to get anything."
                   << std::endl;
     }
 }
@@ -329,7 +340,6 @@ void Binanceusdm::PostLimitBuy(const std::string &symbol,
 
     if (!str_result.empty()) {
         try {
-            std::cout << str_result << std::endl;
             Json::Reader reader;
             json_result.clear();
             reader.parse(str_result, json_result);
@@ -337,7 +347,7 @@ void Binanceusdm::PostLimitBuy(const std::string &symbol,
             std::cout << "<send_order> Error !" << e.what() << std::endl;
         }
     } else {
-        std::cout << "<BinaCPP::send_order> Failed to get anything."
+        std::cout << "<send_order> Failed to get anything."
                   << std::endl;
     }
 }
@@ -366,7 +376,6 @@ void Binanceusdm::PostMarketBuy(const std::string &symbol,
 
     if (!str_result.empty()) {
         try {
-            std::cout << str_result << std::endl;
             Json::Reader reader;
             json_result.clear();
             reader.parse(str_result, json_result);
@@ -388,22 +397,23 @@ void Binanceusdm::PostMarketSell(const std::string &symbol,
     url += "/fapi/v1/order?";
     std::string action = "POST";
     std::string result;
-    std::string post_data = "symbol=" + symbol + "&side=SELL" +
+    std::string querystring = "symbol=" + symbol + "&side=SELL" +
                             "&type=MARKET" +
                             "&quantity=" + std::to_string(quantity) +
                             "&timestamp=" + std::to_string(GetCurrentMsEpoch());
 
-    std::string signature = hmac_sha256(post_data.c_str(),API_SECRET.c_str());
-    post_data += "&signature=" + signature;
+    std::string signature = hmac_sha256(url.c_str(),API_SECRET.c_str());
+    querystring += "&signature=" + signature;
 
     std::vector<std::string> extra_http_header{"X-MBX-APIKEY: " + API_KEY};
+    url += querystring;
+    std::string post_data;
 
     std::string str_result;
     CurlApiWithHeader(url, str_result, extra_http_header, post_data, action);
 
     if (!str_result.empty()) {
         try {
-            std::cout << str_result << std::endl;
             Json::Reader reader;
             json_result.clear();
             reader.parse(str_result, json_result);
@@ -734,17 +744,17 @@ void Binanceusdm::CancelAllOrders(const std::string &symbol,
 
     std::string action = "DELETE";
 
-    std::string post_data = "symbol=" + symbol +
+    std::string querystring = "symbol=" + symbol +
                             "&timestamp=" + std::to_string(GetCurrentMsEpoch());
 
     if (recvWindow > 0) {
-        post_data.append("&recvWindow=");
-        post_data.append(std::to_string(recvWindow));
+        querystring.append("&recvWindow=");
+        querystring.append(std::to_string(recvWindow));
     }
 
 
-    std::string signature = hmac_sha256(post_data.c_str(),API_SECRET.c_str());
-    post_data += "&signature=" + signature;
+    std::string signature = hmac_sha256(querystring.c_str(),API_SECRET.c_str());
+    querystring += "&signature=" + signature;
 
     std::vector<std::string> extra_http_header;
     std::string header_chunk("X-MBX-APIKEY: ");
@@ -752,6 +762,8 @@ void Binanceusdm::CancelAllOrders(const std::string &symbol,
     extra_http_header.push_back(header_chunk);
 
     std::string str_result;
+    std::string post_data;
+    url += querystring;
     CurlApiWithHeader(url, str_result, extra_http_header, post_data, action);
 
     if (!str_result.empty()) {
@@ -1084,7 +1096,7 @@ void Binanceusdm::GetUserStreamKey(Json::Value &json_result)
     }
 
     std::string url(BINANCEUSDM_HOST);
-    url += "/fapi/v1/listenKey?";
+    url += "/fapi/v1/listenKey";
 
     std::vector<std::string> extra_http_header;
     std::string header_chunk("X-MBX-APIKEY: ");
@@ -1106,11 +1118,11 @@ void Binanceusdm::GetUserStreamKey(Json::Value &json_result)
             reader.parse(str_result, json_result);
 
         } catch (std::exception &e) {
-            std::cout << "<BinaCPP::start_userDataStream> Error ! " << e.what()
+            std::cout << "<start_userDataStream> Error ! " << e.what()
                       <<std::endl;
         }
     } else {
-        std::cout << "<BinaCPP::start_userDataStream> Failed to get anything."
+        std::cout << "<start_userDataStream> Failed to get anything."
                   << std::endl;
     }
 }

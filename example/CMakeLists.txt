@@ -22,13 +22,13 @@ target_link_libraries(binance-example
         ${brew}/libwebsockets/lib/libwebsockets.dylib
         )
 
-add_executable(ws-example
-        ws-exampe.cpp
-        ../src/jsoncpp.cpp)
+#add_executable(ws-example
+#        ws-exampe.cpp
+#        ../src/jsoncpp.cpp)
 
-target_link_libraries(ws-example
-        ${CMAKE_CURRENT_SOURCE_DIR}/../cmake-build-debug/lib/libcryptoapi.a
-        ${brew}/curl/lib/libcurl.dylib
-        ${brew}/openssl@1.1/lib/libcrypto.dylib
-        ${brew}/libwebsockets/lib/libwebsockets.dylib
-        )
+#target_link_libraries(ws-example
+#        ${CMAKE_CURRENT_SOURCE_DIR}/../cmake-build-debug/lib/libcryptoapi.a
+#        ${brew}/curl/lib/libcurl.dylib
+#        ${brew}/openssl@1.1/lib/libcrypto.dylib
+#        ${brew}/libwebsockets/lib/libwebsockets.dylib
+#        )
