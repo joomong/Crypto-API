@@ -36,6 +36,8 @@ void Exchange::CurlApiWithHeader(std::string &url,
                                  std::string &post_data,
                                  std::string &action) {
     CURLcode res;
+    curl_global_init(CURL_GLOBAL_ALL);
+    curl_ = curl_easy_init();
 
     if (curl_) {
         curl_easy_setopt(curl_, CURLOPT_URL, url.c_str());
@@ -58,10 +60,6 @@ void Exchange::CurlApiWithHeader(std::string &url,
             if (action == "PUT" || action == "DELETE")
             {
                 curl_easy_setopt(curl_, CURLOPT_CUSTOMREQUEST, action.c_str());
-            }
-            else
-            {
-                curl_easy_setopt(curl_, CURLOPT_CUSTOMREQUEST,nullptr);
             }
             curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, post_data.c_str());
         }
