@@ -13,6 +13,7 @@ endif()
 # Crypto_API library
 add_library(cryptoapi SHARED 
 binance.cpp
+hashkey.cpp
 exchange.cpp
 jsoncpp.cpp 
 binanceusdm.cpp)
