@@ -14,16 +14,16 @@ void Hashkey::init(std::string &api_key, std::string &api_secret){
 
 void Hashkey::GetServerTime(Json::Value &result_json){
     std::string url = HASHKEY_HOST;
-    url += "/api/v1/ping";
+    url += "/api/v1/time";
     std::string result;
     CurlApi(url, result);
     Json::Reader reader;
     reader.parse(result,result_json);
 }
 
-void Hashkey::GetExchangeInfo(Json::Value &result_json){
+void Hashkey::GetExchangeInfo(std::string &symbol,Json::Value &result_json){
     std::string url = HASHKEY_HOST;
-    url += "/api/v1/exchangeInfo";
+    url += "/api/v1/exchangeInfo?symbol=" + symbol;
     std::string result;
     CurlApi(url , result);
     Json::Reader reader;
@@ -33,7 +33,8 @@ void Hashkey::GetExchangeInfo(Json::Value &result_json){
 void Hashkey::GetOrderBook(std::string &symbol, int limit, 
                             Json::Value &result_json){
     std::string url = HASHKEY_HOST;
-    url += "/quote/v1/depth";
+    url += "/quote/v1/depth?symbol=" + symbol + 
+            "&limit=" + std::to_string(limit);
     std::string result;
     CurlApi(url , result);
     Json::Reader reader;
@@ -43,7 +44,7 @@ void Hashkey::GetOrderBook(std::string &symbol, int limit,
 void Hashkey::GetRecentTrades(std::string &symbol , int limit,
                             Json::Value &result_json){
     std::string url = HASHKEY_HOST;
-    url += "quote/v1/trades?symbol=" + symbol +
+    url += "/quote/v1/trades?symbol=" + symbol +
            "&limit=" + std::to_string(limit);
     std::string result;
     CurlApi(url, result);
@@ -54,7 +55,7 @@ void Hashkey::GetRecentTrades(std::string &symbol , int limit,
 void Hashkey::GetKlines(std::string &symbol, std::string &interval, int limit,
                           Json::Value &result_json){
     std::string url = HASHKEY_HOST;
-    url += "quote/v1/klines?symbol=" + symbol 
+    url += "/quote/v1/klines?symbol=" + symbol 
         + "&interval=" + interval
         + "&limit=" + std::to_string(limit);
     std::string result;
@@ -75,26 +76,28 @@ void Hashkey::PostLimitOrder(const std::string &symbol,
                             const std::string &time_in_force,
                             const std::string &client_order_id){
     std::string url(HASHKEY_HOST);
+    url += "/api/v1/futures/order?";
     std::string action = "POST";
     std::string result;
-    std::string post_data = "symbol=" + symbol + 
+    std::string querystring = "symbol=" + symbol + 
                             "&side=" + side +
-                            "&type=" + type +
                             "&timeInForce=" + time_in_force +
                             "&priceType=" +  "INPUT" +
-                            "&type" + "LIMIT" +
+                            "&type=" + "LIMIT" +
                             "&quantity=" + std::to_string(quantity) +
                             "&price=" + std::to_string(price) +
                             "&clientOrderId=" + client_order_id +
                             "&timestamp=" + std::to_string(GetCurrentMsEpoch());
 
-    std::string signature = hmac_sha256(post_data.c_str(),API_SECRET.c_str());
-    post_data += "&signature=" + signature;
+    std::string signature = hmac_sha256(querystring.c_str(),API_SECRET.c_str());
+    querystring += "&signature=" + signature;
+    url += querystring;
 
     std::vector<std::string> extra_http_header;
-    std::string header_chunk("X-MBX-APIKEY: ");
+    std::string header_chunk("X-HK-APIKEY: ");
     header_chunk.append(API_KEY);
     extra_http_header.push_back(header_chunk);
+    std::string post_data;
 
     std::string str_result;
     CurlApiWithHeader(url, str_result, extra_http_header, post_data, action);
@@ -119,9 +122,10 @@ void Hashkey::PostMarketOrder(const std::string &symbol,
                             Json::Value &json_result,
                             const std::string &client_order_id){
     std::string url(HASHKEY_HOST);
+    url += "/api/v1/futures/order?";
     std::string action = "POST";
     std::string result;
-    std::string post_data = "symbol=" + symbol + 
+    std::string querystring = "symbol=" + symbol + 
                             "&side=" + side +
                             "&type=" + "LIMIT" +
                             "&timeInForce=" + "GTC" +
@@ -130,13 +134,15 @@ void Hashkey::PostMarketOrder(const std::string &symbol,
                             "&clientOrderId=" + client_order_id +
                             "&timestamp=" + std::to_string(GetCurrentMsEpoch());
 
-    std::string signature = hmac_sha256(post_data.c_str(),API_SECRET.c_str());
-    post_data += "&signature=" + signature;
+    std::string signature = hmac_sha256(querystring.c_str(),API_SECRET.c_str());
+    querystring += "&signature=" + signature;
+    url += querystring;
 
     std::vector<std::string> extra_http_header;
-    std::string header_chunk("X-MBX-APIKEY: ");
+    std::string header_chunk("X-HK-APIKEY: ");
     header_chunk.append(API_KEY);
     extra_http_header.push_back(header_chunk);
+    std::string post_data;
 
     std::string str_result;
     CurlApiWithHeader(url, str_result, extra_http_header, post_data, action);
@@ -174,7 +180,7 @@ void Hashkey::CancelOrder(const std::string &symbol,
     post_data += "&signature=" + signature;
 
     std::vector <std::string> extra_http_header;
-    std::string header_chunk("X-MBX-APIKEY: ");
+    std::string header_chunk("X-HK-APIKEY: ");
     header_chunk.append(API_KEY);
     extra_http_header.push_back(header_chunk);
 
@@ -204,7 +210,7 @@ void Hashkey::CancelAllOrders(const std::string &symbol,
                          Json::Value &json_result){
 
     std::string url = HASHKEY_HOST;
-    url += "api/v1/futures/batchOrders?"
+    url += "api/v1/futures/batchOrders?";
 
     std::string action = "DELETE";
 
@@ -217,7 +223,7 @@ void Hashkey::CancelAllOrders(const std::string &symbol,
     post_data += "&signature=" + signature;
 
     std::vector <std::string> extra_http_header;
-    std::string header_chunk("X-MBX-APIKEY: ");
+    std::string header_chunk("X-HK-APIKEY: ");
     header_chunk.append(API_KEY);
     extra_http_header.push_back(header_chunk);
 
@@ -247,18 +253,19 @@ void Hashkey::GetCurrentOpenOrders(const std::string &symbol,
     std::string url(HASHKEY_HOST);
     url += "/api/v1/futures/openOrders?";
 
-    std::string atction = "GET";
+    std::string action = "GET";
 
     std::string querystring = "symbol=" + symbol +
-                            "&timestamp=" + hmac_sha256(GetCurrentMsEpoch());
+                            "&type=" + "LIMIT" +
+                            "&timestamp=" + std::to_string(GetCurrentMsEpoch());
     
-    std::string signature =  hmac_sha256(post_data.c_str(),API_SECRET.c_str());
+    std::string signature =  hmac_sha256(querystring.c_str(),API_SECRET.c_str());
     querystring += "&signature=" + signature;
 
     url += querystring;
 
     std::vector<std::string> extra_http_header;
-    std::string header_chunk("X-MBX-APIKEY: ");
+    std::string header_chunk("X-HK-APIKEY: ");
     header_chunk.append(API_KEY);
     extra_http_header.push_back(header_chunk);
 
@@ -284,21 +291,21 @@ void Hashkey::GetCurrentOpenOrders(const std::string &symbol,
 void Hashkey::GetAccountInfo(Json::Value &json_result){
     std::string url(HASHKEY_HOST);
     url += "/api/v1/account?";
-    std::string action = "POST";
+    std::string action = "GET";
 
-    std::string querystring += "&timestamp=" + hmac_sha256(GetCurrentMsEpoch());
+    std::string post_data;
+    std::string querystring = "timestamp=" + std::to_string(GetCurrentMsEpoch());
     
-    std::string signature =  hmac_sha256(post_data.c_str(),API_SECRET.c_str());
+    std::string signature =  hmac_sha256(querystring.c_str(),API_SECRET.c_str());
     querystring += "&signature=" + signature;
 
-    url += querystring;
 
     std::vector<std::string> extra_http_header;
-    std::string header_chunk("X-MBX-APIKEY: ");
+    std::string header_chunk("X-HK-APIKEY: ");
     header_chunk.append(API_KEY);
     extra_http_header.push_back(header_chunk);
 
-    std::string post_data;
+    url += querystring;
 
     std::string str_result;
     CurlApiWithHeader(url, str_result, extra_http_header, post_data, action);
@@ -320,42 +327,37 @@ void Hashkey::GetAccountInfo(Json::Value &json_result){
 
 void Hashkey::GetUserStreamKey(Json::Value &json_result){
     std::string url(HASHKEY_HOST);
+
+
+    std::string action = "POST";
     url += "/api/v1/userDataStream?";
+    std::string post_data;
+    std::string querystring = "timestamp=" + std::to_string(GetCurrentMsEpoch());
+    
+    std::string signature =  hmac_sha256(querystring.c_str(),API_SECRET.c_str());
+    querystring += "&signature=" + signature;
+
 
     std::vector<std::string> extra_http_header;
-    std::string header_chunk("X-MBX-APIKEY: ");
-
-
+    std::string header_chunk("X-HK-APIKEY: ");
     header_chunk.append(API_KEY);
     extra_http_header.push_back(header_chunk);
 
-    std::string action = "POST";
-    std::string post_data;
+    url += querystring;
 
     std::string str_result;
     CurlApiWithHeader(url, str_result, extra_http_header, post_data, action);
 
     if (!str_result.empty()) {
-
         try {
             Json::Reader reader;
             json_result.clear();
             reader.parse(str_result, json_result);
 
         } catch (std::exception &e) {
-            std::cout << "start_userDataStream Error ! " << e.what()
-            <<std::endl;
+            std::cout << "Error !" << e.what() << std::endl;
         }
     } else {
-            std::cout << "<start_userDataStream> Failed to get anything."
-            << std::endl;
+        std::cout << "Failed to get anything." << std::endl;
     }
 }
-
-// static void CloseUserStreamKey(const std::string &listenKey);
-
-// void Hashkey::KeepAliveUserStreamKey(const std::string &listenKey);
-
-
-
-
