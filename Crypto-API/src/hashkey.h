@@ -2,8 +2,6 @@
 #define HASHKEY_H
 
 #include "exchange.h"
-#include "json/json.h"
-#include <string>
 
 #define HASHKEY_HOST "https://api-glb.hashkey.com"
 #define HASHKEY_WS_HOST "stream-glb.hashkey.com"

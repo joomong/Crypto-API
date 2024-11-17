@@ -1,6 +1,4 @@
 #include "hashkey.h"
-#include "exchange.h"
-#include "json/json.h"
 
 std::string Hashkey::API_KEY = "";
 std::string Hashkey::API_SECRET = "";
