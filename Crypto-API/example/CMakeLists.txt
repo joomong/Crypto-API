@@ -1,34 +1,27 @@
 cmake_minimum_required(VERSION 3.22)
-project(Crypto_API)
+project(example)
 
 set(CMAKE_CXX_STANDARD 11)
-set(brew /opt/homebrew/opt)
 
-# Example build settings for crypto API
-include_directories(
-        ../include
-        ../src/json
-        ${brew}/curl/include
-        ${brew}/openssl@1.1/include
-        ${brew}/libwebsockets/include)
+add_executable(example
+        ../src/jsoncpp.cpp
+        ws.cpp)
 
-add_executable(binance-example
-        binance_example.cpp)
+# Link external libraries
+find_package(OpenSSL REQUIRED)
+find_package(CURL REQUIRED)
+find_library(WEBSOCKETS_LIBRARY websockets REQUIRED)
 
-target_link_libraries(binance-example
-        ${CMAKE_CURRENT_SOURCE_DIR}/../cmake-build-debug/lib/libcryptoapi.a
-        ${brew}/curl/lib/libcurl.dylib
-        ${brew}/openssl@1.1/lib/libcrypto.dylib
-        ${brew}/libwebsockets/lib/libwebsockets.dylib
-        )
+target_link_libraries(example
+    ${WEBSOCKETS_LIBRARY}
+    OpenSSL::SSL
+    CURL::libcurl
+)
 
-#add_executable(ws-example
-#        ws-exampe.cpp
-#        ../src/jsoncpp.cpp)
+# Include directories
+target_include_directories(example PUBLIC 
+    ../src
+    /usr/include/
+    /usr/include/curl
+    /usr/include/openssl)
 
-#target_link_libraries(ws-example
-#        ${CMAKE_CURRENT_SOURCE_DIR}/../cmake-build-debug/lib/libcryptoapi.a
-#        ${brew}/curl/lib/libcurl.dylib
-#        ${brew}/openssl@1.1/lib/libcrypto.dylib
-#        ${brew}/libwebsockets/lib/libwebsockets.dylib
-#        )
