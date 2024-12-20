@@ -20,6 +20,7 @@ class Exchange {
 
 public:
     static void init();
+
     static void CurlApi(std::string &url, std::string &result_json);
     static void CurlApiWithHeader(std::string &url,
                                   std::string &result_json,

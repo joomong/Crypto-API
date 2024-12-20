@@ -1,4 +1,5 @@
 #include "exchange.h"
+#include <chrono>
 
 CURL *Exchange::curl_ = nullptr;
 
@@ -34,7 +35,8 @@ void Exchange::CurlApiWithHeader(std::string &url,
                                  std::string &result_json,
                                  std::vector<std::string> &extra_http_header,
                                  std::string &post_data,
-                                 std::string &action) {
+                                 std::string &action) 
+{
     CURLcode res;
     curl_global_init(CURL_GLOBAL_ALL);
     curl_ = curl_easy_init();
@@ -63,6 +65,7 @@ void Exchange::CurlApiWithHeader(std::string &url,
             }
             curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, post_data.c_str());
         }
+        curl_easy_setopt(curl_,CURLOPT_CUSTOMREQUEST,action.c_str());
         res = curl_easy_perform(curl_);
         /* Check for errors */
         if (res != CURLE_OK)
@@ -70,6 +73,7 @@ void Exchange::CurlApiWithHeader(std::string &url,
             std::cout << "<curl_api> curl_easy_perform() failed: "
                       << curl_easy_strerror(res) << std::endl;
         }
+        Cleanup();
     }
 }
 
