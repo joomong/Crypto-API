@@ -4,11 +4,19 @@ project(Crypto_API)
 set(CMAKE_CXX_STANDARD 11)
 
 # Set the output directory for the libraries
-set(LIBRARY_OUTPUT_PATH ../lib)
+set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 
-# Optimization for GCC
+# Build type 설정: 디버그 모드 포함
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug) # 기본 빌드 타입을 Debug로 설정
+endif()
+
+# 추가 플래그: 디버그 심볼 추가
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
+
+# Optimization for GCC (Debug 모드일 때 최적화 플래그 제거)
 if (CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 endif()
 
 # Add the Crypto_API library

@@ -19,8 +19,20 @@ class Exchange {
     static CURL *curl_;
 
 public:
-    static void init();
+    // 웹소켓 핸들
+    static struct lws_context *context;
+    static struct lws_protocols protocols[];
 
+    // wsi -> callback
+    static std::map<struct lws*, CB> handles;
+
+    // wsi -> subscribe message (연결 후 전송할 구독 메시지)
+    static std::map<struct lws*, std::string> subscribe_messages;
+
+    static void init();
+    static void Cleanup();
+
+    // ------- REST -------
     static void CurlApi(std::string &url, std::string &result_json);
     static void CurlApiWithHeader(std::string &url,
                                   std::string &result_json,
@@ -32,19 +44,21 @@ public:
                               std::size_t size,
                               std::size_t nmemb,
                               std::string *buffer);
-    static void Cleanup();
+    
+    // ----------- Crypto ----------
     static std::string sha256(const char *data);
     static std::string hmac_sha256(const char *data, const char *key);
     static std::string b2a_hex(char *byte_arr, int n);
     static long long GetCurrentMsEpoch();
 
-    // libwebsockets
-    static struct lws_context *context;
-    static struct lws_protocols protocols[];
-
-    static std::map <struct lws *,CB> handles ;
+    // ------------- Websocket -------
     static int  event_cb( struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len );
     static void connect_endpoint(CB user_cb,const std::string &host,int port,const char* path);
+    static void connect_endpoint_with_sub(CB user_cb,
+                                          const std::string &host,
+                                          int port,
+                                          const char* path,
+                                          const std::string &subscribe_message);
     static void enter_event_loop();
 };
 
