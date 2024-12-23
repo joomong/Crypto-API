@@ -35,7 +35,7 @@ void Exchange::init() {
     info.options |= LWS_SERVER_OPTION_DO_SSL_GLOBAL_INIT; //| LWS_SERVER_OPTION_DISABLE_IPV6;
      lws_set_log_level(LLL_ERR | LLL_WARN | LLL_NOTICE | LLL_INFO | LLL_DEBUG | LLL_PARSER | LLL_LATENCY | LLL_EXT, nullptr);
     // CA 인증서 파일 경로 설정
-    // info.ssl_ca_filepath = "/etc/ssl/certs/ca-certificates.crt"; // 시스템에 맞게 경로 수정
+    info.ssl_ca_filepath = "/etc/ssl/certs/ca-certificates.crt"; // 시스템에 맞게 경로 수정
     // 또는 CA 인증서 메모리 설정을 원할 경우:
     // info.ssl_ca_mem = <pointer to CA cert data>;
     // info.ssl_ca_mem_len = <length of CA cert data>;    

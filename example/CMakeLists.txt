@@ -14,7 +14,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
 # Add executable
 add_executable(example
         ../src/jsoncpp.cpp
-        ex-hashkey.cpp)
+        ws-example.cpp)
 
 # Link external libraries
 find_package(OpenSSL REQUIRED)
