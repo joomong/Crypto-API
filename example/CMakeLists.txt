@@ -1,34 +1,46 @@
-cmake_minimum_required(VERSION 3.25)
-project(Crypto_API)
+cmake_minimum_required(VERSION 3.16.3)
+project(example)
 
-set(CMAKE_CXX_STANDARD 14)
-set(brew /opt/homebrew/opt)
+set(CMAKE_CXX_STANDARD 11)
 
-# Example build settings for crypto API
-include_directories(
-        ../include
-        ../src/json
-        ${brew}/curl/include
-        ${brew}/openssl@1.1/include
-        ${brew}/libwebsockets/include)
+# Build type 설정: 디버그 모드 포함
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug) # 기본 빌드 타입을 Debug로 설정
+endif()
 
-add_executable(binance-example
-        binance_example.cpp)
+# 디버그 플래그 추가
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
 
-target_link_libraries(binance-example
-        ${CMAKE_CURRENT_SOURCE_DIR}/../cmake-build-debug/lib/libcryptoapi.a
-        ${brew}/curl/lib/libcurl.dylib
-        ${brew}/openssl@1.1/lib/libcrypto.dylib
-        ${brew}/libwebsockets/lib/libwebsockets.dylib
-        )
+# Add executable
+add_executable(example
+        ../src/jsoncpp.cpp
+        ws-example.cpp)
 
-#add_executable(ws-example
-#        ws-exampe.cpp
-#        ../src/jsoncpp.cpp)
+# Link external libraries
+find_package(OpenSSL REQUIRED)
+find_package(CURL REQUIRED)
+find_library(WEBSOCKETS_LIBRARY websockets REQUIRED)
 
-#target_link_libraries(ws-example
-#        ${CMAKE_CURRENT_SOURCE_DIR}/../cmake-build-debug/lib/libcryptoapi.a
-#        ${brew}/curl/lib/libcurl.dylib
-#        ${brew}/openssl@1.1/lib/libcrypto.dylib
-#        ${brew}/libwebsockets/lib/libwebsockets.dylib
-#        )
+# Find the cryptoapi library with debug symbols
+find_library(CRYPTOAPI_LIBRARY
+    NAMES cryptoapi
+    HINTS "${CMAKE_SOURCE_DIR}/../lib"
+)
+if(NOT CRYPTOAPI_LIBRARY)
+    message(FATAL_ERROR "Could not find libcryptoapi.so in ${CMAKE_SOURCE_DIR}/../lib")
+endif()
+
+# Link the libraries
+target_link_libraries(example
+    ${WEBSOCKETS_LIBRARY}
+    OpenSSL::SSL
+    CURL::libcurl
+    ${CRYPTOAPI_LIBRARY}  # 전체 경로로 링크
+)
+
+# Include directories
+target_include_directories(example PUBLIC 
+    ../src
+    /usr/include/
+    /usr/include/curl
+    /usr/include/openssl)

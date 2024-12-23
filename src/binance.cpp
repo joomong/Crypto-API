@@ -6,9 +6,9 @@ std::string Binance::API_SECRET = "";
 
 
 void Binance::init(std::string &api_key, std::string &api_secret){
+    Exchange::init();
     API_KEY = api_key;
     API_SECRET = api_secret;
-    Exchange::init();
 }
 
 
@@ -187,7 +187,7 @@ void Binance::PostLimitBuy(const std::string &symbol,
     std::string action = "POST";
     std::string result;
     std::string post_data = "symbol=" + symbol + "&side=BUY" +
-                            "&type=LIMIT_MAKER" + "&timeInForce=GTC" +
+                            "&type=LIMIT_MAKER" +
                             "&quantity=" + std::to_string(quantity) +
                             "&price=" + std::to_string(price)
                             +"&timestamp=" + std::to_string(GetCurrentMsEpoch());
