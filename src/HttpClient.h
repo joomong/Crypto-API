@@ -22,6 +22,11 @@ public:
     // DELETE 요청 수행
     bool Delete(const std::string& url, const std::string& delete_data, Json::Value& result_json, const std::vector<std::string>& headers = {});
 
+    bool Put(const std::string& url,
+             const std::string& put_data,
+             Json::Value& result_json,
+             const std::vector<std::string>& headers = {});
+
 private:
     CURL* curl_;
 

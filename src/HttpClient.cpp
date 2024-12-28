@@ -101,3 +101,10 @@ bool HttpClient::Post(const std::string& url, const std::string& post_data, Json
 bool HttpClient::Delete(const std::string& url, const std::string& delete_data, Json::Value& result_json, const std::vector<std::string>& headers) {
     return PerformRequest(url, "DELETE", delete_data, result_json, headers);
 }
+
+bool HttpClient::Put(const std::string& url,
+                     const std::string& put_data,
+                     Json::Value& result_json,
+                     const std::vector<std::string>& headers) {
+    return PerformRequest(url, "PUT", put_data, result_json, headers);
+}
