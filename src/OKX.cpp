@@ -34,9 +34,19 @@ void OKX::GetServerTime(Json::Value &result_json) {
     http_client_.Get(url, result_json);
 }
 
-void OKX::GetExchangeInfo(const std::string &instrument_id, Json::Value &result_json) {
-    std::string url = getHost() + "/api/v5/public/instruments?instId=" + instrument_id;
-    http_client_.Get(url, result_json);
+void OKX::GetExchangeInfo(const std::string &instType,Json::Value &result_json, const std::string &instId) {
+    std::string url = getHost() + "/api/v5/public/instruments?instType=" + instType;
+    if (!instId.empty()) {
+        url += "&instId=" + instId;
+    }
+
+    if (!http_client_.Get(url, result_json)) {
+        std::cerr << "Failed to retrieve exchange info for instType: " << instType;
+        if (!instId.empty()) {
+            std::cerr << ", instId: " << instId;
+        }
+        std::cerr << std::endl;
+    }
 }
 
 void OKX::GetOrderBook(const std::string &instrument_id, int size, Json::Value &result_json) {
@@ -55,15 +65,17 @@ void OKX::GetKlines(const std::string &instrument_id, const std::string &granula
     http_client_.Get(url, result_json);
 }
 
-// Private API 메서드 구현
 
-void OKX::PostLimitOrder(const std::string &instrument_id,
+// Private methods
+void OKX::PostLimitOrder(const std::string &instId,
                          const std::string &side,
-                         const std::string &type,
-                         double size,
-                         double price,
+                         const std::string &ordType,
+                         const std::string &sz,
+                         const std::string &px,
                          Json::Value &json_result,
-                         const std::string &client_order_id)
+                         const std::string &clOrdId,
+                         const std::string &posSide,
+                         const std::string &tdMode)
 {
     std::string url = getHost() + "/api/v5/trade/order";
     std::string method = "POST";
@@ -71,22 +83,27 @@ void OKX::PostLimitOrder(const std::string &instrument_id,
 
     // JSON 바디 생성
     Json::Value order;
-    order["instId"] = instrument_id;
-    order["side"] = side; // "buy" 또는 "sell"
-    order["ordType"] = type; // "limit"
-    order["sz"] = std::to_string(size);
-    order["px"] = std::to_string(price);
-    order["clOrdId"] = client_order_id;
-    order["tdMode"] = "cash"; // "cross" 등
-    order["tag"] = "api_order"; // 선택적
+    order["instId"] = instId;
+    order["side"] = side;
+    order["ordType"] = ordType;
+    order["sz"] = sz;
+    order["px"] = px;
+    if (!clOrdId.empty()) {
+        order["clOrdId"] = clOrdId;
+    }
+    order["posSide"] = posSide;
+    order["tdMode"] = tdMode;
 
     // JSON을 문자열로 변환
     Json::StreamWriterBuilder writer;
     std::string body = Json::writeString(writer, order);
 
-    // 타임스탬프 및 서명 생성
-    std::string timestamp = Utils::GetCurrentMsEpoch();
-    std::string signature = Utils::hmac_sha256(method + request_path + body + timestamp, api_secret_);
+    // 타임스탬프 생성 (ISO 8601 형식)
+    std::string timestamp = Utils::GetCurrentTimestamp();
+
+    // 서명 생성: timestamp + method + request_path + body
+    std::string to_sign = timestamp + method + request_path + body;
+    std::string signature = Utils::hmac_sha256(to_sign, api_secret_);
 
     // 헤더 설정
     std::vector<std::string> extra_http_header;
@@ -97,37 +114,58 @@ void OKX::PostLimitOrder(const std::string &instrument_id,
     extra_http_header.emplace_back("Content-Type: application/json");
 
     // POST 요청 수행
-    http_client_.Post(url, body, json_result, extra_http_header);
+    if (!http_client_.Post(url, body, json_result, extra_http_header)) {
+        std::cerr << "Failed to place limit order for instrument: " << instId << std::endl;
+    }
 }
 
-void OKX::PostMarketOrder(const std::string &instrument_id,
-                          const std::string &side,
-                          const std::string &type,
-                          double size,
-                          Json::Value &json_result,
-                          const std::string &client_order_id)
+// PostBatchOrders 함수
+void OKX::PostBatchOrders(const std::vector<std::vector<std::string>> &orders, Json::Value &json_result)
 {
-    std::string url = getHost() + "/api/v5/trade/order";
+    if (orders.empty() || orders.size() > 20) {
+        std::cerr << "Batch orders must contain between 1 and 20 orders." << std::endl;
+        return;
+    }
+
+    std::string url = getHost() + "/api/v5/trade/batch-orders";
     std::string method = "POST";
-    std::string request_path = "/api/v5/trade/order";
+    std::string request_path = "/api/v5/trade/batch-orders";
 
     // JSON 바디 생성
-    Json::Value order;
-    order["instId"] = instrument_id;
-    order["side"] = side; // "buy" 또는 "sell"
-    order["ordType"] = type; // "market"
-    order["sz"] = std::to_string(size);
-    order["clOrdId"] = client_order_id;
-    order["tdMode"] = "cash"; // "cross" 등
-    order["tag"] = "api_order"; // 선택적
+    Json::Value orders_json(Json::arrayValue);
+    for (const auto &order : orders) {
+        if (order.size() < 5) {
+            std::cerr << "Each order must have at least 5 parameters: instId, side, ordType, sz, px." << std::endl;
+            continue;
+        }
+        Json::Value order_json;
+        order_json["instId"] = order[0];
+        order_json["side"] = order[1];
+        order_json["ordType"] = order[2];
+        order_json["sz"] = order[3];
+        order_json["px"] = order[4];
+        if (order.size() >= 6 && !order[5].empty()) {
+            order_json["clOrdId"] = order[5];
+        }
+        if (order.size() >= 7 && !order[6].empty()) {
+            order_json["posSide"] = order[6];
+        }
+        if (order.size() >= 8 && !order[7].empty()) {
+            order_json["tdMode"] = order[7];
+        }
+        orders_json.append(order_json);
+    }
 
     // JSON을 문자열로 변환
     Json::StreamWriterBuilder writer;
-    std::string body = Json::writeString(writer, order);
+    std::string body = Json::writeString(writer, orders_json);
 
-    // 타임스탬프 및 서명 생성
-    std::string timestamp = Utils::GetCurrentMsEpoch(); // OKX는 ISO 8601 형식을 요구할 수 있음. 필요시 수정
-    std::string signature = Utils::hmac_sha256(method + request_path + body + timestamp, api_secret_);
+    // 타임스탬프 생성 (ISO 8601 형식)
+    std::string timestamp = Utils::GetCurrentTimestamp();
+
+    // 서명 생성: timestamp + method + request_path + body
+    std::string to_sign = timestamp + method + request_path + body;
+    std::string signature = Utils::hmac_sha256(to_sign, api_secret_);
 
     // 헤더 설정
     std::vector<std::string> extra_http_header;
@@ -138,31 +176,46 @@ void OKX::PostMarketOrder(const std::string &instrument_id,
     extra_http_header.emplace_back("Content-Type: application/json");
 
     // POST 요청 수행
-    http_client_.Post(url, body, json_result, extra_http_header);
+    if (!http_client_.Post(url, body, json_result, extra_http_header)) {
+        std::cerr << "Failed to place batch orders." << std::endl;
+    }
 }
 
-void OKX::CancelOrder(const std::string &instrument_id,
-                      const std::string &order_id,
-                      Json::Value &json_result)
+// CancelOrder 함수
+void OKX::CancelOrder(const std::string &instId,
+                    Json::Value &json_result,
+                    const std::string &ordId,
+                    const std::string &clOrdId)
 {
+    if (ordId.empty() && clOrdId.empty()) {
+        std::cerr << "Either ordId or clOrdId must be provided to cancel an order." << std::endl;
+        return;
+    }
+
     std::string url = getHost() + "/api/v5/trade/cancel-order";
     std::string method = "POST";
     std::string request_path = "/api/v5/trade/cancel-order";
 
     // JSON 바디 생성
-    Json::Value cancel_order;
-    cancel_order["instId"] = instrument_id;
-    cancel_order["ordId"] = order_id;
-    // "clOrdId" 사용 시 아래와 같이 설정
-    // cancel_order["clOrdId"] = client_order_id;
+    Json::Value cancel_json;
+    cancel_json["instId"] = instId;
+    if (!ordId.empty()) {
+        cancel_json["ordId"] = ordId;
+    }
+    if (!clOrdId.empty()) {
+        cancel_json["clOrdId"] = clOrdId;
+    }
 
     // JSON을 문자열로 변환
     Json::StreamWriterBuilder writer;
-    std::string body = Json::writeString(writer, cancel_order);
+    std::string body = Json::writeString(writer, cancel_json);
 
-    // 타임스탬프 및 서명 생성
-    std::string timestamp = Utils::GetCurrentMsEpoch(); // OKX는 ISO 8601 형식을 요구할 수 있음. 필요시 수정
-    std::string signature = Utils::hmac_sha256(method + request_path + body + timestamp, api_secret_);
+    // 타임스탬프 생성 (ISO 8601 형식)
+    std::string timestamp = Utils::GetCurrentTimestamp();
+
+    // 서명 생성: timestamp + method + request_path + body
+    std::string to_sign = timestamp + method + request_path + body;
+    std::string signature = Utils::hmac_sha256(to_sign, api_secret_);
 
     // 헤더 설정
     std::vector<std::string> extra_http_header;
@@ -173,28 +226,49 @@ void OKX::CancelOrder(const std::string &instrument_id,
     extra_http_header.emplace_back("Content-Type: application/json");
 
     // POST 요청 수행
-    http_client_.Post(url, body, json_result, extra_http_header);
+    if (!http_client_.Post(url, body, json_result, extra_http_header)) {
+        std::cerr << "Failed to cancel order for instrument: " << instId << std::endl;
+    }
 }
 
-void OKX::CancelAllOrders(const std::string &instrument_id,
-                           Json::Value &json_result)
+// CancelBatchOrders 함수
+void OKX::CancelBatchOrders(const std::vector<std::vector<std::string>> &orders, Json::Value &json_result)
 {
-    std::string url = getHost() + "/api/v5/trade/cancel-all-orders";
+    if (orders.empty() || orders.size() > 20) {
+        std::cerr << "Batch cancel orders must contain between 1 and 20 orders." << std::endl;
+        return;
+    }
+
+    std::string url = getHost() + "/api/v5/trade/cancel-batch-orders";
     std::string method = "POST";
-    std::string request_path = "/api/v5/trade/cancel-all-orders";
+    std::string request_path = "/api/v5/trade/cancel-batch-orders";
 
     // JSON 바디 생성
-    Json::Value cancel_all;
-    cancel_all["instId"] = instrument_id;
-    // "ordType" 등 추가 필드 설정 가능
+    Json::Value cancels_json(Json::arrayValue);
+    for (const auto &order : orders) {
+        if (order.size() < 2) {
+            std::cerr << "Each cancel order must have at least 2 parameters: instId, ordId." << std::endl;
+            continue;
+        }
+        Json::Value cancel_json;
+        cancel_json["instId"] = order[0];
+        cancel_json["ordId"] = order[1];
+        if (order.size() >= 3 && !order[2].empty()) {
+            cancel_json["clOrdId"] = order[2];
+        }
+        cancels_json.append(cancel_json);
+    }
 
     // JSON을 문자열로 변환
     Json::StreamWriterBuilder writer;
-    std::string body = Json::writeString(writer, cancel_all);
+    std::string body = Json::writeString(writer, cancels_json);
 
-    // 타임스탬프 및 서명 생성
-    std::string timestamp = Utils::GetCurrentMsEpoch(); // OKX는 ISO 8601 형식을 요구할 수 있음. 필요시 수정
-    std::string signature = Utils::hmac_sha256(method + request_path + body + timestamp, api_secret_);
+    // 타임스탬프 생성 (ISO 8601 형식)
+    std::string timestamp = Utils::GetCurrentTimestamp();
+
+    // 서명 생성: timestamp + method + request_path + body
+    std::string to_sign = timestamp + method + request_path + body;
+    std::string signature = Utils::hmac_sha256(to_sign, api_secret_);
 
     // 헤더 설정
     std::vector<std::string> extra_http_header;
@@ -205,7 +279,122 @@ void OKX::CancelAllOrders(const std::string &instrument_id,
     extra_http_header.emplace_back("Content-Type: application/json");
 
     // POST 요청 수행
-    http_client_.Post(url, body, json_result, extra_http_header);
+    if (!http_client_.Post(url, body, json_result, extra_http_header)) {
+        std::cerr << "Failed to cancel batch orders." << std::endl;
+    }
+}
+
+// AmendOrder 함수
+void OKX::AmendOrder(const std::string &instId,
+                     const std::string &ordId,
+                     const std::string &newSz,
+                     const std::string &newPx,
+                     Json::Value &json_result,
+                     const std::string &clOrdId,
+                     bool cxlOnFail)
+{
+    if (ordId.empty()) {
+        std::cerr << "ordId must be provided to amend an order." << std::endl;
+        return;
+    }
+
+    std::string url = getHost() + "/api/v5/trade/amend-order";
+    std::string method = "POST";
+    std::string request_path = "/api/v5/trade/amend-order";
+
+    // JSON 바디 생성
+    Json::Value amend_json;
+    amend_json["instId"] = instId;
+    amend_json["ordId"] = ordId;
+    amend_json["newSz"] = newSz;
+    amend_json["newPx"] = newPx;
+    if (!clOrdId.empty()) {
+        amend_json["clOrdId"] = clOrdId;
+    }
+    amend_json["cxlOnFail"] = cxlOnFail ? "true" : "false";
+
+    // JSON을 문자열로 변환
+    Json::StreamWriterBuilder writer;
+    std::string body = Json::writeString(writer, amend_json);
+
+    // 타임스탬프 생성 (ISO 8601 형식)
+    std::string timestamp = Utils::GetCurrentTimestamp();
+
+    // 서명 생성: timestamp + method + request_path + body
+    std::string to_sign = timestamp + method + request_path + body;
+    std::string signature = Utils::hmac_sha256(to_sign, api_secret_);
+
+    // 헤더 설정
+    std::vector<std::string> extra_http_header;
+    extra_http_header.emplace_back("OK-ACCESS-KEY: " + api_key_);
+    extra_http_header.emplace_back("OK-ACCESS-SIGN: " + signature);
+    extra_http_header.emplace_back("OK-ACCESS-TIMESTAMP: " + timestamp);
+    extra_http_header.emplace_back("OK-ACCESS-PASSPHRASE: " + passphrase_);
+    extra_http_header.emplace_back("Content-Type: application/json");
+
+    // POST 요청 수행
+    if (!http_client_.Post(url, body, json_result, extra_http_header)) {
+        std::cerr << "Failed to amend order for instrument: " << instId << std::endl;
+    }
+}
+
+// AmendBatchOrders 함수
+void OKX::AmendBatchOrders(const std::vector<std::vector<std::string>> &orders, Json::Value &json_result)
+{
+    if (orders.empty() || orders.size() > 20) {
+        std::cerr << "Batch amend orders must contain between 1 and 20 orders." << std::endl;
+        return;
+    }
+
+    std::string url = getHost() + "/api/v5/trade/amend-batch-orders";
+    std::string method = "POST";
+    std::string request_path = "/api/v5/trade/amend-batch-orders";
+
+    // JSON 바디 생성
+    Json::Value amends_json(Json::arrayValue);
+    for (const auto &order : orders) {
+        if (order.size() < 4) {
+            std::cerr << "Each amend order must have at least 4 parameters: instId, ordId, newSz, newPx." << std::endl;
+            continue;
+        }
+        Json::Value amend_json;
+        amend_json["instId"] = order[0];
+        amend_json["ordId"] = order[1];
+        amend_json["newSz"] = order[2];
+        amend_json["newPx"] = order[3];
+        if (order.size() >= 5 && !order[4].empty()) {
+            amend_json["clOrdId"] = order[4];
+        }
+        if (order.size() >= 6) {
+            bool cxlOnFail = (order[5] == "true") ? true : false;
+            amend_json["cxlOnFail"] = cxlOnFail ? "true" : "false";
+        }
+        amends_json.append(amend_json);
+    }
+
+    // JSON을 문자열로 변환
+    Json::StreamWriterBuilder writer;
+    std::string body = Json::writeString(writer, amends_json);
+
+    // 타임스탬프 생성 (ISO 8601 형식)
+    std::string timestamp = Utils::GetCurrentTimestamp();
+
+    // 서명 생성: timestamp + method + request_path + body
+    std::string to_sign = timestamp + method + request_path + body;
+    std::string signature = Utils::hmac_sha256(to_sign, api_secret_);
+
+    // 헤더 설정
+    std::vector<std::string> extra_http_header;
+    extra_http_header.emplace_back("OK-ACCESS-KEY: " + api_key_);
+    extra_http_header.emplace_back("OK-ACCESS-SIGN: " + signature);
+    extra_http_header.emplace_back("OK-ACCESS-TIMESTAMP: " + timestamp);
+    extra_http_header.emplace_back("OK-ACCESS-PASSPHRASE: " + passphrase_);
+    extra_http_header.emplace_back("Content-Type: application/json");
+
+    // POST 요청 수행
+    if (!http_client_.Post(url, body, json_result, extra_http_header)) {
+        std::cerr << "Failed to amend batch orders." << std::endl;
+    }
 }
 
 void OKX::GetCurrentOpenOrders(const std::string &instrument_id, Json::Value &json_result) {
@@ -215,7 +404,7 @@ void OKX::GetCurrentOpenOrders(const std::string &instrument_id, Json::Value &js
     std::string body = ""; // GET 요청에는 바디가 없음
 
     // 타임스탬프 및 서명 생성
-    std::string timestamp = Utils::GetCurrentMsEpoch(); // OKX는 ISO 8601 형식을 요구할 수 있음. 필요시 수정
+    std::string timestamp = Utils::GetCurrentTimestamp();
     std::string signature = Utils::hmac_sha256(method + request_path + body + timestamp, api_secret_);
 
     // 서명을 URL에 추가
@@ -232,58 +421,6 @@ void OKX::GetCurrentOpenOrders(const std::string &instrument_id, Json::Value &js
     http_client_.Get(url, json_result, extra_http_header);
 }
 
-void OKX::GetOrders(const std::string &instrument_id,
-                   Json::Value &result_json,
-                   long orderId,
-                   long startTime,
-                   long endTime,
-                   long limit,
-                   long recvWindow)
-{
-    std::string url = getHost() + "/api/v5/trade/orders-history?instId=" + instrument_id;
-    std::string method = "GET";
-    std::string request_path = "/api/v5/trade/orders-history?instId=" + instrument_id;
-    std::string body = ""; // GET 요청에는 바디가 없음
-
-    // 선택적 쿼리 파라미터 추가
-    std::string querystring = "";
-    if (orderId > 0) {
-        querystring += "&ordId=" + std::to_string(orderId);
-    }
-    if (startTime > 0) {
-        querystring += "&after=" + std::to_string(startTime);
-    }
-    if (endTime > 0) {
-        querystring += "&before=" + std::to_string(endTime);
-    }
-    if (limit > 0) {
-        querystring += "&limit=" + std::to_string(limit);
-    }
-    if (recvWindow > 0) {
-        querystring += "&recvWindow=" + std::to_string(recvWindow);
-    }
-
-    request_path += querystring;
-    url += querystring;
-
-    // 타임스탬프 및 서명 생성
-    std::string timestamp = Utils::GetCurrentMsEpoch(); // OKX는 ISO 8601 형식을 요구할 수 있음. 필요시 수정
-    std::string signature = Utils::hmac_sha256(method + request_path + body + timestamp, api_secret_);
-
-    // 서명을 URL에 추가
-    url += "&signature=" + signature;
-
-    // 헤더 설정
-    std::vector<std::string> extra_http_header;
-    extra_http_header.emplace_back("OK-ACCESS-KEY: " + api_key_);
-    extra_http_header.emplace_back("OK-ACCESS-SIGN: " + signature);
-    extra_http_header.emplace_back("OK-ACCESS-TIMESTAMP: " + timestamp);
-    extra_http_header.emplace_back("OK-ACCESS-PASSPHRASE: " + passphrase_);
-
-    // GET 요청 수행
-    http_client_.Get(url, result_json, extra_http_header);
-}
-
 void OKX::GetAccountInfo(Json::Value &result_json) {
     std::string url = getHost() + "/api/v5/account/balance";
     std::string method = "GET";
@@ -291,7 +428,7 @@ void OKX::GetAccountInfo(Json::Value &result_json) {
     std::string body = ""; // GET 요청에는 바디가 없음
 
     // 타임스탬프 및 서명 생성
-    std::string timestamp = Utils::GetCurrentMsEpoch(); // OKX는 ISO 8601 형식을 요구할 수 있음. 필요시 수정
+    std::string timestamp = Utils::GetCurrentTimestamp();
     std::string signature = Utils::hmac_sha256(method + request_path + body + timestamp, api_secret_);
 
     // 서명을 URL에 추가
@@ -306,29 +443,4 @@ void OKX::GetAccountInfo(Json::Value &result_json) {
 
     // GET 요청 수행
     http_client_.Get(url, result_json, extra_http_header);
-}
-
-void OKX::GetUserStreamKey(Json::Value &json_result) {
-    std::string url = getHost() + "/api/v5/userDataStream";
-    std::string method = "POST";
-    std::string request_path = "/api/v5/userDataStream";
-    std::string body = ""; // 일부 엔드포인트는 바디가 필요할 수 있음. 문서 참조
-
-    // 타임스탬프 및 서명 생성
-    std::string timestamp = Utils::GetCurrentMsEpoch(); // OKX는 ISO 8601 형식을 요구할 수 있음. 필요시 수정
-    std::string signature = Utils::hmac_sha256(method + request_path + body + timestamp, api_secret_);
-
-    // 서명을 URL에 추가 (API 문서에 따라 다를 수 있음)
-    url += "?signature=" + signature;
-
-    // 헤더 설정
-    std::vector<std::string> extra_http_header;
-    extra_http_header.emplace_back("OK-ACCESS-KEY: " + api_key_);
-    extra_http_header.emplace_back("OK-ACCESS-SIGN: " + signature);
-    extra_http_header.emplace_back("OK-ACCESS-TIMESTAMP: " + timestamp);
-    extra_http_header.emplace_back("OK-ACCESS-PASSPHRASE: " + passphrase_);
-    extra_http_header.emplace_back("Content-Type: application/json");
-
-    // POST 요청 수행
-    http_client_.Post(url, body, json_result, extra_http_header);
 }

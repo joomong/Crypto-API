@@ -29,45 +29,44 @@ public:
 
     // 공개 API 메서드
     void GetServerTime(Json::Value &result_json);
-    void GetExchangeInfo(const std::string &instrument_id, Json::Value &result_json);
+    void GetExchangeInfo(const std::string &instType, Json::Value &result_json, const std::string &instId = "");
     void GetOrderBook(const std::string &instrument_id, int size, Json::Value &result_json);
     void GetRecentTrades(const std::string &instrument_id, int limit, Json::Value &result_json);
     void GetKlines(const std::string &instrument_id, const std::string &granularity, int limit, Json::Value &result_json);
 
     // Private API 메서드
-    void PostLimitOrder(const std::string &instrument_id,
+     void PostLimitOrder(const std::string &instId,
                         const std::string &side,
-                        const std::string &type,
-                        double size,
-                        double price,
+                        const std::string &ordType,
+                        const std::string &sz,
+                        const std::string &px,
                         Json::Value &json_result,
-                        const std::string &client_order_id = "client_order_001");
+                        const std::string &clOrdId = "",
+                        const std::string &posSide = "net",
+                        const std::string &tdMode = "isolated");
 
-    void PostMarketOrder(const std::string &instrument_id,
-                         const std::string &side,
-                         const std::string &type,
-                         double size,
-                         Json::Value &json_result,
-                         const std::string &client_order_id = "client_order_001");
+    void PostBatchOrders(const std::vector<std::vector<std::string>> &orders, Json::Value &json_result);
 
-    void CancelOrder(const std::string &instrument_id,
-                    const std::string &order_id,
-                    Json::Value &json_result);
+    void CancelOrder(const std::string &instId,
+                    Json::Value &json_result,
+                     const std::string &ordId = "",
+                     const std::string &clOrdId = "");
 
-    void CancelAllOrders(const std::string &instrument_id,
-                         Json::Value &json_result);
+    void CancelBatchOrders(const std::vector<std::vector<std::string>> &orders, Json::Value &json_result);
+
+    void AmendOrder(const std::string &instId,
+                   const std::string &ordId,
+                   const std::string &newSz,
+                   const std::string &newPx,
+                   Json::Value &json_result,
+                   const std::string &clOrdId = "",
+                   bool cxlOnFail = false);
+
+    void AmendBatchOrders(const std::vector<std::vector<std::string>> &orders, Json::Value &json_result);
 
     void GetCurrentOpenOrders(const std::string &instrument_id, Json::Value &json_result);
-    void GetOrders(const std::string &instrument_id,
-                  Json::Value &result_json,
-                  long orderId = 0,
-                  long startTime = 0,
-                  long endTime = 0,
-                  long limit = 0,
-                  long recvWindow = 0);
 
     void GetAccountInfo(Json::Value &result_json);
-    void GetUserStreamKey(Json::Value &json_result);
 };
 
 #endif /* OKX_H */
