@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.16)
 project(Crypto_API)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 20)
 
-# Set the output directory for the libraries
-set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
+# Set the output directory for the libraries to be outside the build directory
+set(LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/lib)
 
 # Build type 설정: 디버그 모드 포함
 if(NOT CMAKE_BUILD_TYPE)
@@ -21,11 +21,11 @@ endif()
 
 # Add the Crypto_API library
 add_library(cryptoapi SHARED 
-    src/binance.cpp
-    src/hashkey.cpp
-    src/exchange.cpp
+    src/Hashkey.cpp
+    src/OKX.cpp
+    src/HttpClient.cpp
+    src/Utils.cpp
     src/jsoncpp.cpp 
-    src/binanceusdm.cpp
 )
 
 # Link external libraries

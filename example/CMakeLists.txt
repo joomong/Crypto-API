@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16.3)
 project(example)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 20)
 
 # Build type 설정: 디버그 모드 포함
 if(NOT CMAKE_BUILD_TYPE)
@@ -14,7 +14,10 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
 # Add executable
 add_executable(example
         ../src/jsoncpp.cpp
-        ws-example.cpp)
+        # ws-example.cpp
+        # Hashkey-ex.cpp
+        Okx-ex.cpp
+        )
 
 # Link external libraries
 find_package(OpenSSL REQUIRED)
